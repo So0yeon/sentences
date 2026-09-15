@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>문장 클리닉 — 어색한 문장을 치료하라!</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<style>
+:root{
+  --bg:#F7F9FC; --surface:#FFFFFF; --surface-soft:#F1F5F9;
+  --primary:#2563EB; --primary-soft:#E8F0FF;
+  --mint:#10B981; --mint-soft:#E8F8F2;
+  --text-primary:#172033; --text-secondary:#64748B; --text-muted:#94A3B8;
+  --border:#E2E8F0;
+  --navy:#0F1E3D;
+  --c:#2563EB; --c-soft:#E8F0FF;
+  --shadow:0 4px 20px rgba(15,23,42,.05);
+  --radius:20px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text-primary);
+  font-family:"Pretendard Variable",Pretendard,"Noto Sans KR",-apple-system,BlinkMacSystemFont,system-ui,"Malgun Gothic",sans-serif;
+  font-weight:400;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  word-break:keep-all;
+}
+button{font-family:inherit;}
+:focus-visible{outline:3px solid #1D4ED8;outline-offset:3px;border-radius:6px;}
+
+/* ---------- Header ---------- */
+.topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);}
+.topbar-inner{max-width:1200px;margin:0 auto;height:68px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;letter-spacing:-.02em;}
+.brand .mark{width:34px;height:34px;border-radius:11px;background:var(--navy);color:#fff;display:grid;place-items:center;}
+.brand .mark svg{width:19px;height:19px;}
+.counter{font-size:15px;font-weight:600;color:var(--text-secondary);white-space:nowrap;}
+.flow{border-bottom:1px solid var(--border);background:var(--surface);}
+.flow-inner{max-width:1200px;margin:0 auto;padding:11px 28px;display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none;}
+.flow-inner::-webkit-scrollbar{display:none;}
+.flow-step{display:flex;align-items:center;gap:7px;font-size:14px;color:var(--text-muted);white-space:nowrap;padding:3px 2px;}
+.flow-step .dot{width:19px;height:19px;border-radius:50%;border:1.8px solid var(--border);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--text-muted);background:var(--surface);}
+.flow-step.done{color:var(--text-secondary);}
+.flow-step.done .dot{background:var(--mint-soft);border-color:#A7E8CE;color:#047857;}
+.flow-step.now{color:var(--text-primary);font-weight:700;}
+.flow-step.now .dot{background:var(--navy);border-color:var(--navy);color:#fff;}
+.flow-line{width:18px;height:1.5px;background:var(--border);flex:none;}
+
+/* ---------- Layout ---------- */
+.stage{max-width:1080px;margin:0 auto;padding:40px 28px 80px;}
+.stage.narrow{max-width:860px;}
+.eyebrow{font-size:14px;font-weight:600;color:var(--text-secondary);display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:var(--surface-soft);color:var(--text-secondary);font-size:13.5px;font-weight:600;}
+.chip.live{background:var(--primary-soft);color:#1D4ED8;}
+.chip.tint{background:var(--c-soft);color:var(--c);}
+.chip svg{width:15px;height:15px;}
+h1.screen-title{font-size:30px;font-weight:700;letter-spacing:-.03em;margin:14px 0 8px;line-height:1.35;}
+p.screen-sub{font-size:17px;color:var(--text-secondary);margin:0 0 28px;max-width:62ch;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px;}
+.card + .card{margin-top:18px;}
+.section-q{font-size:19px;font-weight:700;letter-spacing:-.02em;margin:0 0 4px;}
+.section-help{font-size:15px;color:var(--text-secondary);margin:0 0 18px;}
+
+/* ---------- Sentence ---------- */
+.sentence-card{padding:44px 32px;text-align:center;}
+.sentence{font-size:clamp(26px,3.4vw,40px);font-weight:700;letter-spacing:-.03em;line-height:1.55;display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:4px 2px;}
+.token{font:inherit;color:inherit;background:none;border:0;padding:4px 10px;border-radius:12px;cursor:pointer;transition:background 160ms ease,transform 160ms ease;position:relative;}
+.token:hover{background:var(--surface-soft);}
+.token.on{background:var(--c-soft);color:var(--c);transform:scale(1.03);}
+.token.on::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:3px;border-radius:2px;background:var(--c);}
+.token.plain{cursor:default;}
+.token.plain:hover{background:none;}
+.slot{display:inline-flex;align-items:baseline;padding:4px 12px;border-radius:12px;background:var(--c-soft);color:var(--c);box-shadow:inset 0 -3px 0 var(--c);}
+.link-note{margin-top:20px;font-size:16px;font-weight:600;color:var(--c);display:inline-flex;align-items:center;gap:8px;background:var(--c-soft);padding:8px 16px;border-radius:999px;}
+
+/* ---------- Choices ---------- */
+.choice-row{display:flex;flex-wrap:wrap;gap:12px;}
+.choice{border:1.5px solid var(--border);background:var(--surface);border-radius:14px;padding:14px 20px;min-height:52px;font-size:17px;font-weight:600;color:var(--text-primary);cursor:pointer;transition:border-color 160ms ease,background 160ms ease,transform 160ms ease;display:inline-flex;align-items:center;gap:9px;}
+.choice:hover{border-color:#CBD5E1;background:#FBFCFE;}
+.choice.sel{border-color:var(--c);background:var(--c-soft);color:var(--c);}
+.choice.sel .tick{opacity:1;}
+.choice .tick{opacity:0;font-weight:700;}
+.choice.wide{width:100%;justify-content:flex-start;text-align:left;}
+.choice .num{width:26px;height:26px;border-radius:8px;background:var(--surface-soft);color:var(--text-secondary);font-size:14px;display:grid;place-items:center;flex:none;}
+.choice.sel .num{background:var(--c);color:#fff;}
+.slot-label{font-size:14px;font-weight:600;color:var(--text-secondary);margin:0 0 9px;display:flex;align-items:center;gap:7px;}
+.slot-label .bar{width:14px;height:3px;border-radius:2px;background:var(--c);}
+.slot-group + .slot-group{margin-top:22px;}
+
+/* ---------- Feedback ---------- */
+.fb{margin-top:20px;border-radius:16px;padding:18px 20px;display:flex;gap:13px;align-items:flex-start;font-size:16px;line-height:1.6;animation:rise 200ms ease both;}
+.fb .ic{flex:none;width:26px;height:26px;border-radius:9px;display:grid;place-items:center;font-size:15px;}
+.fb.good{background:var(--mint-soft);color:#065F46;}
+.fb.good .ic{background:#B9EAD4;}
+.fb.look{background:#FEF3E2;color:#92400E;}
+.fb.look .ic{background:#FBD9A5;}
+.fb.info{background:var(--primary-soft);color:#1E40AF;}
+.fb.info .ic{background:#C7DAFB;}
+.fb b{font-weight:700;}
+@keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.reveal{animation:rise 240ms ease both;}
+
+/* ---------- Before / After ---------- */
+.ba{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center;margin-top:22px;}
+.ba-box{border:1px solid var(--border);border-radius:16px;padding:20px;background:var(--surface-soft);}
+.ba-box.after{background:var(--mint-soft);border-color:#BDE9D6;}
+.ba-tag{font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;}
+.ba-box.after .ba-tag{color:#047857;}
+.ba-text{font-size:20px;font-weight:600;letter-spacing:-.02em;line-height:1.5;}
+.ba-text mark{background:#FDE68A;color:inherit;padding:1px 4px;border-radius:5px;}
+.ba-box.after .ba-text mark{background:#A7F3D0;}
+.ba-arrow{color:var(--text-muted);font-size:22px;}
+@media(max-width:720px){.ba{grid-template-columns:1fr;}.ba-arrow{transform:rotate(90deg);text-align:center;}}
+
+/* ---------- Pair discovery ---------- */
+.pair{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.pair input{font:inherit;font-size:18px;font-weight:600;padding:13px 16px;border:1.5px solid var(--border);border-radius:13px;background:var(--surface);width:210px;color:var(--text-primary);}
+.pair input:focus{border-color:var(--c);outline:none;box-shadow:0 0 0 3px var(--c-soft);}
+.pair .sym{font-size:22px;color:var(--text-muted);}
+
+/* ---------- Diagnosis cards ---------- */
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+@media(max-width:1100px){.grid4{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){.grid4{grid-template-columns:1fr;}}
+.dcard{text-align:left;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px 22px;cursor:pointer;transition:transform 180ms ease,border-color 180ms ease;display:flex;flex-direction:column;gap:12px;min-height:186px;width:100%;}
+.dcard:hover{transform:scale(1.02);border-color:#CBD5E1;}
+.dcard .ico{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;}
+.dcard .ico svg{width:23px;height:23px;}
+.dcard .no{font-size:14px;font-weight:700;color:var(--text-muted);}
+.dcard .nm{font-size:19px;font-weight:700;letter-spacing:-.02em;line-height:1.35;}
+.dcard .pr{font-size:14.5px;color:var(--text-secondary);font-weight:600;margin-top:auto;}
+.dcard .state{font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:5px;}
+.dcard[data-done="1"]{border-color:#BDE9D6;}
+.dcard[data-done="1"] .state{color:#047857;}
+
+/* ---------- Chart / reference ---------- */
+.ref-row{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--surface);}
+.ref-row + .ref-row{margin-top:12px;}
+.ref-head{display:flex;align-items:center;gap:14px;padding:18px 20px;width:100%;background:none;border:0;cursor:pointer;text-align:left;}
+.ref-head:hover{background:var(--surface-soft);}
+.ref-head .ico{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none;}
+.ref-head .ico svg{width:21px;height:21px;}
+.ref-name{font-size:18px;font-weight:700;letter-spacing:-.02em;}
+.ref-pair{font-size:14.5px;color:var(--text-secondary);font-weight:600;}
+.ref-open{margin-left:auto;color:var(--text-muted);font-size:14px;font-weight:600;flex:none;}
+.ref-body{padding:4px 20px 22px;border-top:1px solid var(--border);animation:rise 200ms ease both;}
+.ref-ex{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:18px 0 10px;}
+.ref-ex mark{background:var(--c-soft);color:var(--c);padding:1px 6px;border-radius:6px;}
+.ref-line{font-size:15.5px;color:var(--text-secondary);}
+.mine{margin-top:14px;font-size:15.5px;background:var(--surface-soft);border-radius:12px;padding:12px 16px;}
+.mine b{color:var(--text-primary);}
+
+/* ---------- Paper notice ---------- */
+.paper{display:flex;gap:14px;align-items:flex-start;background:#FFFBEB;border:1px solid #FDE9B5;border-radius:16px;padding:18px 20px;font-size:15.5px;color:#92400E;line-height:1.6;}
+.paper .ic{flex:none;width:26px;height:26px;border-radius:9px;background:#FBD9A5;display:grid;place-items:center;}
+table.wk{width:100%;border-collapse:collapse;margin-top:18px;font-size:15.5px;}
+table.wk th,table.wk td{border:1px solid var(--border);padding:12px 14px;text-align:left;}
+table.wk th{background:var(--surface-soft);font-weight:700;font-size:14.5px;color:var(--text-secondary);}
+table.wk td.blank{color:var(--text-muted);}
+
+/* ---------- Buttons ---------- */
+.btn{border:0;border-radius:13px;height:54px;padding:0 28px;font-size:17px;font-weight:700;letter-spacing:-.01em;cursor:pointer;transition:background 160ms ease,transform 160ms ease;display:inline-flex;align-items:center;justify-content:center;gap:9px;}
+.btn:active{transform:translateY(1px);}
+.btn-primary{background:var(--navy);color:#fff;}
+.btn-primary:hover{background:#1B3462;}
+.btn-ghost{background:var(--surface);color:var(--text-secondary);border:1.5px solid var(--border);}
+.btn-ghost:hover{color:var(--text-primary);border-color:#CBD5E1;}
+.btn-soft{background:var(--primary-soft);color:#1D4ED8;}
+.btn-soft:hover{background:#DBE7FF;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.navrow{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:32px;}
+.navrow .spacer{flex:1;}
+
+/* ---------- Home / prologue ---------- */
+.hero{min-height:calc(100vh - 68px);display:grid;place-items:center;padding:56px 28px;text-align:center;}
+.hero-inner{max-width:680px;}
+.hero .mark-lg{width:78px;height:78px;border-radius:24px;background:var(--navy);color:#fff;display:grid;place-items:center;margin:0 auto 26px;}
+.hero .mark-lg svg{width:40px;height:40px;}
+.hero h1{font-size:clamp(34px,5vw,54px);font-weight:700;letter-spacing:-.045em;margin:0 0 8px;line-height:1.2;}
+.hero .kicker{font-size:17px;font-weight:600;color:var(--text-secondary);margin:0 0 20px;letter-spacing:.02em;}
+.hero p.lead{font-size:19px;color:var(--text-secondary);line-height:1.75;margin:0 0 36px;}
+.mission{margin-top:44px;padding-top:24px;border-top:1px solid var(--border);font-size:15px;color:var(--text-muted);}
+.mission strong{display:block;margin-top:6px;font-size:17px;color:var(--text-secondary);font-weight:600;}
+.pro-line{font-size:clamp(22px,3vw,30px);font-weight:700;letter-spacing:-.03em;line-height:1.5;margin:0 0 16px;opacity:0;animation:rise 500ms ease forwards;}
+.pro-line.sub{font-size:clamp(17px,2vw,20px);font-weight:500;color:var(--text-secondary);}
+
+/* ---------- Seminar ---------- */
+.seminar-case{padding:48px 32px;text-align:center;}
+.seminar-q{font-size:clamp(22px,2.8vw,30px);font-weight:700;letter-spacing:-.03em;text-align:center;margin:30px 0 0;}
+.pill-nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;}
+.pill{border:1.5px solid var(--border);background:var(--surface);border-radius:999px;padding:8px 15px;font-size:14px;font-weight:700;color:var(--text-secondary);cursor:pointer;}
+.pill.on{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+/* ---------- Summary ---------- */
+.sum-list{display:flex;flex-direction:column;gap:12px;margin:8px 0 0;}
+.sum-item{display:flex;align-items:center;gap:14px;padding:16px 20px;border-radius:16px;background:var(--surface-soft);font-size:19px;font-weight:700;letter-spacing:-.02em;}
+.sum-item .ico{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;flex:none;}
+.sum-item .ico svg{width:19px;height:19px;}
+.sum-final{text-align:center;font-size:clamp(20px,2.6vw,26px);font-weight:700;letter-spacing:-.03em;line-height:1.55;margin:28px 0 0;}
+textarea.note{width:100%;min-height:110px;font:inherit;font-size:17px;padding:16px;border:1.5px solid var(--border);border-radius:14px;resize:vertical;background:var(--surface);color:var(--text-primary);}
+textarea.note:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
+
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+@media(max-width:640px){
+  .topbar-inner,.flow-inner{padding-left:18px;padding-right:18px;}
+  .stage{padding:26px 18px 64px;}
+  .card{padding:22px 18px;}
+  .sentence-card{padding:30px 18px;}
+  .btn{width:100%;}
+  .navrow{flex-direction:column-reverse;}
+  .navrow .btn{width:100%;}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v5a4.5 4.5 0 0 0 9 0V3"/><path d="M4.5 3H6M13.5 3H15"/><path d="M10.5 12.5v2.5a4 4 0 0 0 8 0v-1.2"/><circle cx="18.5" cy="11.5" r="2"/></svg></span>
+      문장 클리닉
+    </div>
+    <div class="counter" id="counter"></div>
+  </div>
+</header>
+<nav class="flow" id="flow" aria-label="수업 진행 단계"><div class="flow-inner" id="flowInner"></div></nav>
+<main id="stage"></main>
+
+<script>
+(function(){
+"use strict";
+
+/* ======================================================================
+   1. 진단 유형 데이터
+   ====================================================================== */
+var ICON = {
+  comp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="6.3" cy="12" r="3.3"/><circle cx="17.7" cy="12" r="3.3"/><path d="M9.6 12h4.8"/></svg>',
+  time:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.2 9.6A8 8 0 1 1 4 13.4"/><path d="M4 5.6v4h4"/><path d="M12 8.4V12l2.6 1.7"/></svg>',
+  honor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.5" cy="7.5" r="2.8"/><path d="M4.4 19.5c0-3.1 2.4-5.2 5.1-5.2"/><path d="M13.6 12.6h6v4.6h-2.6l-2.6 2.3v-2.3h-.8z"/></svg>',
+  nega:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 8.2H7.4a3.8 3.8 0 0 0 0 7.6H10"/><path d="M14 8.2h2.6a3.8 3.8 0 0 1 0 7.6H14"/><path d="M12 5.6v1.8M12 11.1v1.8M12 16.6v1.8"/></svg>'
+};
+
+var DIAGS = [
+  { id:'comp', no:'①', name:'주술 엇박자증', pair:'주어 ↔ 서술어',
+    pairA:'주어', pairB:'서술어', cat:'문장 성분의 호응', color:'#3B82F6', soft:'#EAF2FE', room:'진단실 01' },
+  { id:'time', no:'②', name:'시간 엇갈림증', pair:'시간 표현 ↔ 서술어',
+    pairA:'시간 표현', pairB:'서술어', cat:'시간 표현의 호응', color:'#10B981', soft:'#E4F6EF', room:'진단실 02' },
+  { id:'honor', no:'③', name:'존중 표현 누락증', pair:'높임 대상 ↔ 조사·서술어',
+    pairA:'높임 대상', pairB:'조사·서술어', cat:'높임 표현의 호응', color:'#8B5CF6', soft:'#F1EBFE', room:'진단실 03' },
+  { id:'nega', no:'④', name:'부정 짝꿍 실종증', pair:'전혀·별로·결코 ↔ 부정 표현',
+    pairA:'전혀·별로·결코', pairB:'부정 표현', cat:'단어 의미상의 호응', color:'#F59E0B', soft:'#FEF2E0', room:'진단실 04' }
+];
+function D(id){ for(var i=0;i<DIAGS.length;i++){ if(DIAGS[i].id===id) return DIAGS[i]; } return DIAGS[0]; }
+function diagIndex(id){ for(var i=0;i<DIAGS.length;i++){ if(DIAGS[i].id===id) return i; } return 0; }
+
+/* ======================================================================
+   2. 탐구(활동 1) 데이터 — 슬롯 두 개의 조합을 직접 바꿔 본다
+   ====================================================================== */
+var EXPLORE = {
+  comp:{
+    caseNo:'CASE #01',
+    ask:'이 문장은 누구의 행동을 말하고 있나요? 두 표현을 바꾸어 보며 살펴봅시다.',
+    before:'민지는 동생에게 책을 읽어 주셨다.',
+    parts:[ {slot:'a'}, {t:'동생에게'}, {t:'책을'}, {slot:'b'} ],
+    a:{ label:'행동을 하는 사람', options:['민지는','할머니께서'], init:'민지는' },
+    b:{ label:'행동을 나타내는 말', options:['읽어 주었다','읽어 주셨다'], init:'읽어 주셨다' },
+    combos:{
+      '민지는|읽어 주었다':{ ok:true,  m:'‘민지는’과 ‘읽어 주었다’가 서로 잘 맞습니다. 친구의 행동이니 높이지 않아요.' },
+      '민지는|읽어 주셨다':{ ok:false, m:'‘민지는’은 높여야 할 분이 아닌데, ‘주셨다’는 높이는 말이에요. 두 표현이 어긋납니다.' },
+      '할머니께서|읽어 주었다':{ ok:false, m:'‘할머니께서’로 높여 놓고 행동을 나타내는 말은 높이지 않았어요. 짝이 하나 빠졌습니다.' },
+      '할머니께서|읽어 주셨다':{ ok:true,  m:'‘할머니께서’와 ‘읽어 주셨다’가 서로 잘 맞습니다. 행동하는 사람이 바뀌니 서술어도 바뀌네요.' }
+    },
+    close:'행동을 나타내는 말은 <b>그 행동을 하는 사람</b>에 따라 달라졌습니다.'
+  },
+  time:{
+    caseNo:'CASE #02',
+    ask:'시간을 나타내는 말과 서술어를 여러 가지로 바꾸어 보세요.',
+    before:'나는 어제 도서관에 간다.',
+    parts:[ {t:'나는'}, {slot:'a'}, {t:'도서관에'}, {slot:'b'} ],
+    a:{ label:'시간을 나타내는 말', options:['어제','내일'], init:'어제' },
+    b:{ label:'서술어', options:['갔다','간다','갈 것이다'], init:'간다' },
+    combos:{
+      '어제|갔다':{ ok:true,  m:'‘어제’와 ‘갔다’ — 둘 다 이미 지나간 일을 나타내므로 잘 어울립니다.' },
+      '어제|간다':{ ok:false, m:'‘어제’는 지나간 때인데 ‘간다’는 지금 하는 일을 나타내요. 시간이 서로 엇갈립니다.' },
+      '어제|갈 것이다':{ ok:false, m:'‘어제’는 지나간 때인데 ‘갈 것이다’는 앞으로 할 일을 나타냅니다.' },
+      '내일|갔다':{ ok:false, m:'‘내일’은 아직 오지 않은 때인데 ‘갔다’는 이미 끝난 일을 나타내요.' },
+      '내일|간다':{ ok:true,  m:'‘내일 간다’처럼 쓰기도 합니다. 다만 앞으로 할 일을 더 분명히 하려면 ‘갈 것이다’가 좋아요.' },
+      '내일|갈 것이다':{ ok:true, m:'‘내일’과 ‘갈 것이다’ — 둘 다 앞으로의 일을 나타내므로 잘 어울립니다.' }
+    },
+    close:'시간을 나타내는 말이 바뀌면 <b>서술어의 모습</b>도 함께 바뀌었습니다.'
+  },
+  honor:{
+    caseNo:'CASE #03',
+    ask:'이 문장에서 높여야 할 분은 누구인가요? 두 표현을 바꾸어 보세요.',
+    before:'선생님께서 우리에게 숙제를 내주었다.',
+    parts:[ {slot:'a'}, {t:'우리에게'}, {t:'숙제를'}, {slot:'b'} ],
+    a:{ label:'높임 대상과 조사', options:['선생님께서','선생님이'], init:'선생님께서' },
+    b:{ label:'서술어', options:['내주셨다','내주었다'], init:'내주었다' },
+    combos:{
+      '선생님께서|내주셨다':{ ok:true,  m:'‘께서’와 ‘-셨다’가 함께 쓰였습니다. 높임의 짝이 모두 맞았어요.' },
+      '선생님께서|내주었다':{ ok:false, m:'‘께서’로 높여 놓고 서술어에서는 높이지 않았어요. 높임의 짝이 하나 빠졌습니다.' },
+      '선생님이|내주셨다':{ ok:false, m:'서술어만 높이고 조사는 ‘이’ 그대로예요. 두 표현이 서로 어긋납니다.' },
+      '선생님이|내주었다':{ ok:false, m:'문장은 말이 되지만 선생님을 전혀 높이지 않았어요. 웃어른께는 ‘께서 ~셨다’를 함께 씁니다.' }
+    },
+    close:'높여야 할 분이 있으면 <b>조사와 서술어가 함께</b> 높임의 모습으로 바뀌었습니다.'
+  },
+  nega:{
+    caseNo:'CASE #04',
+    ask:'앞의 표현과 뒤의 표현을 짝지어 보며 어떤 짝이 자연스러운지 찾아보세요.',
+    before:'나는 그 음식을 별로 좋아한다.',
+    parts:[ {t:'나는'}, {t:'그'}, {t:'음식을'}, {slot:'a'}, {slot:'b'} ],
+    a:{ label:'앞에 오는 말', options:['정말','전혀','별로','결코'], init:'별로' },
+    b:{ label:'뒤에 오는 서술어', options:['좋아한다','좋아하지 않는다'], init:'좋아한다' },
+    combos:{
+      '정말|좋아한다':{ ok:true,  m:'‘정말’은 뒤에 어떤 표현이 와도 쓸 수 있는 말이에요.' },
+      '정말|좋아하지 않는다':{ ok:true, m:'‘정말’은 긍정과 부정 어느 쪽과도 어울립니다. 다른 말들과 비교해 보세요.' },
+      '전혀|좋아한다':{ ok:false, m:'‘전혀’ 다음에는 ‘~않다’ 같은 말이 와야 해요. 앞말이 뒷말을 부르고 있습니다.' },
+      '전혀|좋아하지 않는다':{ ok:true, m:'‘전혀’와 ‘좋아하지 않는다’ — 앞말과 뒷말이 딱 맞는 짝입니다.' },
+      '별로|좋아한다':{ ok:false, m:'‘별로’ 다음에는 ‘~않다’가 와야 자연스러워요. 지금은 짝이 실종되었습니다.' },
+      '별로|좋아하지 않는다':{ ok:true, m:'‘별로’와 ‘좋아하지 않는다’가 자연스럽게 어울립니다.' },
+      '결코|좋아한다':{ ok:false, m:'‘결코’ 다음에도 ‘~않다’가 와야 합니다.' },
+      '결코|좋아하지 않는다':{ ok:true, m:'‘결코’와 ‘좋아하지 않는다’ — 이 역시 서로를 부르는 짝이에요.' }
+    },
+    close:'‘전혀·별로·결코’는 뒤에 <b>반드시 부정하는 말</b>을 데리고 다녔습니다.'
+  }
+};
+
+/* ======================================================================
+   3. 활동 2 — 문장 처방 12문항 (유형별 3문항, 자연스러운 문장 포함)
+   ====================================================================== */
+var CASES = [
+  { id:'comp-01', diag:'comp', natural:false,
+    tokens:['내','꿈은','훌륭한','요리사가','되고 싶다.'],
+    bad:[1,4], fix:[4], options:['되는 것이다.','되고 싶다.','되었다.'], answer:0,
+    corrected:'내 꿈은 훌륭한 요리사가 되는 것이다.',
+    explain:'‘내 꿈은’으로 시작했으니 서술어도 ‘~되는 것이다’로 받아야 주어와 짝이 맞습니다.',
+    hint:'문장의 주어를 먼저 찾아보세요. 그 주어와 서술어가 서로 어울리나요?' },
+  { id:'comp-02', diag:'comp', natural:true,
+    tokens:['우리','반','친구들은','운동장에서','신나게','뛰어놀았다.'],
+    healthy:'주어 ‘친구들은’과 서술어 ‘뛰어놀았다’가 자연스럽게 어울립니다.' },
+  { id:'comp-03', diag:'comp', natural:false,
+    tokens:['내가','가장','좋아하는','계절은','여름을 좋아한다.'],
+    bad:[3,4], fix:[4], options:['여름이다.','여름을 좋아한다.','여름을 좋아했다.'], answer:0,
+    corrected:'내가 가장 좋아하는 계절은 여름이다.',
+    explain:'주어가 ‘계절은’이므로 서술어는 ‘여름이다’가 되어야 짝이 맞습니다.',
+    hint:'무엇에 대해 말하고 있나요? 주어를 찾아 서술어와 나란히 놓아 보세요.' },
+
+  { id:'time-01', diag:'time', natural:false,
+    tokens:['나는','어제','친구와','영화를','본다.'],
+    bad:[1,4], fix:[4], options:['봤다.','본다.','볼 것이다.'], answer:0,
+    corrected:'나는 어제 친구와 영화를 봤다.',
+    explain:'‘어제’는 지나간 일을 나타내므로 ‘봤다’와 자연스럽게 어울립니다.',
+    hint:'시간을 나타내는 말을 먼저 찾아보세요.' },
+  { id:'time-02', diag:'time', natural:false,
+    tokens:['내일','우리','가족은','할머니','댁에','갔다.'],
+    bad:[0,5], fix:[5], options:['갈 것이다.','갔다.','갔었다.'], answer:0,
+    corrected:'내일 우리 가족은 할머니 댁에 갈 것이다.',
+    explain:'‘내일’은 아직 오지 않은 때이므로 앞일을 나타내는 ‘갈 것이다’와 어울립니다.',
+    hint:'‘내일’은 언제를 가리키는 말인가요?' },
+  { id:'time-03', diag:'time', natural:true,
+    tokens:['지난주에','우리','반은','현장','체험','학습을','다녀왔다.'],
+    healthy:'‘지난주에’와 ‘다녀왔다’ 모두 지나간 일을 나타내어 서로 잘 맞습니다.' },
+
+  { id:'honor-01', diag:'honor', natural:false,
+    tokens:['선생님께서','우리에게','숙제를','내주었다.'],
+    bad:[0,3], fix:[3], options:['내주셨다.','내주었다.','내줄 것이다.'], answer:0,
+    corrected:'선생님께서 우리에게 숙제를 내주셨다.',
+    explain:'‘께서’로 높였으니 서술어도 ‘내주셨다’로 높여야 짝이 맞습니다.',
+    hint:'이 문장에서 높여야 할 분은 누구인가요?' },
+  { id:'honor-02', diag:'honor', natural:true,
+    tokens:['할아버지께서','거실에서','신문을','읽고','계신다.'],
+    healthy:'‘할아버지께서’와 ‘읽고 계신다’가 함께 높임을 나타내어 짝이 맞습니다.' },
+  { id:'honor-03', diag:'honor', natural:false,
+    tokens:['할머니께서','진지를','맛있게','먹었다.'],
+    bad:[0,3], fix:[3], options:['드셨다.','먹었다.','먹는다.'], answer:0,
+    corrected:'할머니께서 진지를 맛있게 드셨다.',
+    explain:'높여야 할 분의 행동이므로 ‘먹었다’ 대신 ‘드셨다’를 씁니다.',
+    hint:'‘진지’는 누구의 밥을 높여 부르는 말일까요?' },
+
+  { id:'nega-01', diag:'nega', natural:false,
+    tokens:['나는','그','음식을','별로','좋아한다.'],
+    bad:[3,4], fix:[4], options:['좋아하지 않는다.','좋아한다.','좋아했다.'], answer:0,
+    corrected:'나는 그 음식을 별로 좋아하지 않는다.',
+    explain:'‘별로’는 뒤에 ‘~않다’ 같은 부정하는 말을 데리고 다닙니다.',
+    hint:'‘별로’ 뒤에는 보통 어떤 말이 오나요?' },
+  { id:'nega-02', diag:'nega', natural:true,
+    tokens:['동생은','결코','거짓말을','하지','않는다.'],
+    healthy:'‘결코’와 ‘하지 않는다’가 서로를 부르는 짝으로 잘 쓰였습니다.' },
+  { id:'nega-03', diag:'nega', natural:false,
+    tokens:['오늘','아침에는','전혀','배가','고팠다.'],
+    bad:[2,4], fix:[4], options:['고프지 않았다.','고팠다.','고프다.'], answer:0,
+    corrected:'오늘 아침에는 전혀 배가 고프지 않았다.',
+    explain:'‘전혀’ 뒤에는 ‘~않다’가 와야 앞말과 뒷말의 짝이 맞습니다.',
+    hint:'‘전혀’라는 말이 어떤 표현을 기다리고 있는지 살펴보세요.' }
+];
+
+/* ======================================================================
+   4. 상태
+   ====================================================================== */
+var S = {
+  screen:'home',
+  first:{ judged:null, picked:[], swap:'간다', reaction:null },
+  ex:{},          /* 탐구 상태 */
+  curDiag:'comp',
+  openRef:null,
+  caseIdx:0,
+  cs:{},          /* 케이스 상태 */
+  seminarIdx:0, seminarStage:0
+};
+DIAGS.forEach(function(d){ S.ex[d.id]={ a:EXPLORE[d.id].a.init, b:EXPLORE[d.id].b.init, touched:0, tried:{}, pa:'', pb:'', done:false }; });
+CASES.forEach(function(c,i){ S.cs[i]={ stage:0, judge:null, diag:null, marks:[], fix:null, msg:null }; });
+
+function allExplored(){ return DIAGS.every(function(d){ return S.ex[d.id].done; }); }
+function exploredCount(){ var n=0; DIAGS.forEach(function(d){ if(S.ex[d.id].done) n++; }); return n; }
+
+/* ======================================================================
+   5. 헤더 · 진행 표시
+   ====================================================================== */
+var FLOW = [
+  { key:'first',  label:'진찰' },
+  { key:'explore',label:'탐구' },
+  { key:'chart',  label:'진단표' },
+  { key:'cases',  label:'처방' },
+  { key:'seminar',label:'세미나' },
+  { key:'summary',label:'정리' }
+];
+function flowKey(){
+  var s=S.screen;
+  if(s==='home'||s==='prologue') return null;
+  if(s==='first') return 'first';
+  if(s==='hub'||s==='explore'||s==='result') return 'explore';
+  if(s==='chart') return 'chart';
+  if(s==='cases') return 'cases';
+  if(s==='seminar') return 'seminar';
+  if(s==='summary') return 'summary';
+  return null;
+}
+function paintHeader(){
+  var k=flowKey(), flow=document.getElementById('flow'), inner=document.getElementById('flowInner');
+  var counter=document.getElementById('counter');
+  if(!k){ flow.style.display='none'; counter.textContent=''; return; }
+  flow.style.display='';
+  var cur=0; FLOW.forEach(function(f,i){ if(f.key===k) cur=i; });
+  var html='';
+  FLOW.forEach(function(f,i){
+    var cls = i<cur ? 'done' : (i===cur ? 'now' : '');
+    var dot = i<cur ? '✓' : String(i+1);
+    if(i>0) html+='<span class="flow-line"></span>';
+    html+='<span class="flow-step '+cls+'"><span class="dot">'+dot+'</span>'+f.label+'</span>';
+  });
+  inner.innerHTML=html;
+
+  var c='';
+  if(S.screen==='explore') c='진단 '+(diagIndex(S.curDiag)+1)+' / 4';
+  else if(S.screen==='hub'||S.screen==='result') c='진단 '+exploredCount()+' / 4';
+  else if(S.screen==='cases') c='CASE '+pad(S.caseIdx+1)+' / 12';
+  else if(S.screen==='seminar') c='세미나 자료';
+  else if(S.screen==='chart') c='진단서 작성 시간';
+  else if(S.screen==='first') c='첫 번째 진찰';
+  else if(S.screen==='summary') c='문장 건강검진 완료';
+  counter.textContent=c;
+}
+function pad(n){ return n<10 ? '0'+n : ''+n; }
+
+/* ======================================================================
+   6. 공통 조각
+   ====================================================================== */
+function tone(d){ return 'style="--c:'+d.color+';--c-soft:'+d.soft+'"'; }
+function iconBox(d,size){
+  var s=size||42;
+  return '<span class="ico" style="width:'+s+'px;height:'+s+'px;background:'+d.soft+';color:'+d.color+'">'+ICON[d.id]+'</span>';
+}
+function fb(kind,title,body){
+  var ic = kind==='good' ? '✓' : (kind==='look' ? '🔎' : '🩺');
+  return '<div class="fb '+kind+'"><span class="ic">'+ic+'</span><span><b>'+title+'</b><br>'+body+'</span></div>';
+}
+function tokensHTML(tokens,onIdx,clickable){
+  return tokens.map(function(t,i){
+    var on = onIdx.indexOf(i)>=0 ? ' on' : '';
+    if(!clickable) return '<span class="token plain'+on+'">'+t+'</span>';
+    return '<button class="token'+on+'" data-act="tok" data-i="'+i+'" aria-pressed="'+(on?'true':'false')+'">'+t+'</button>';
+  }).join('');
+}
+function markSentence(tokens,idxList){
+  return tokens.map(function(t,i){ return idxList.indexOf(i)>=0 ? '<mark>'+t+'</mark>' : t; }).join(' ');
+}
+
+/* ======================================================================
+   7. 화면들
+   ====================================================================== */
+var V = {};
+
+/* --- 첫 화면 --- */
+V.home=function(){
+  return '<div class="hero"><div class="hero-inner">'+
+    '<div class="mark-lg" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v5a4.5 4.5 0 0 0 9 0V3"/><path d="M4.5 3H6M13.5 3H15"/><path d="M10.5 12.5v2.5a4 4 0 0 0 8 0v-1.2"/><circle cx="18.5" cy="11.5" r="2"/></svg></div>'+
+    '<p class="kicker">문장 클리닉</p>'+
+    '<h1>어색한 문장을 치료하라!</h1>'+
+    '<p class="lead">문장 속 표현들이 서로 잘 어울리는지 살펴보고<br>수상한 문장의 원인을 찾아봅시다.</p>'+
+    '<button class="btn btn-primary" data-act="go" data-to="prologue">문장 진단 시작</button>'+
+    '<div class="mission">오늘의 임무<strong>“문장이 자연스러워지는 비밀을 찾아라.”</strong></div>'+
+  '</div></div>';
+};
+
+/* --- 프롤로그 --- */
+V.prologue=function(){
+  return '<div class="hero"><div class="hero-inner">'+
+    '<span class="chip live" style="margin-bottom:24px">긴급 환자 접수</span>'+
+    '<p class="pro-line" style="animation-delay:.05s">문장 클리닉에 이상한 문장들이 찾아왔습니다.</p>'+
+    '<p class="pro-line sub" style="animation-delay:.9s">그런데 어디가 아픈지는 아무도 모릅니다.</p>'+
+    '<p class="pro-line" style="animation-delay:1.8s">문장 의사가 되어 직접 진단해 주세요.</p>'+
+    '<div style="opacity:0;animation:rise 500ms ease 2.6s forwards;margin-top:34px">'+
+    '<button class="btn btn-primary" data-act="go" data-to="first">첫 번째 문장 진찰하기</button></div>'+
+  '</div></div>';
+};
+
+/* --- 활동 1: 첫 진찰 --- */
+V.first=function(){
+  var f=S.first, d=D('time');
+  var tokens=['나는','어제','도서관에',f.swap];
+  var html='<div class="stage narrow" '+tone(d)+'>'+
+    '<div class="eyebrow"><span class="chip">CASE #00 · 접수실</span><span>현재 상태: 진찰 중</span></div>'+
+    '<h1 class="screen-title">첫 번째 환자가 들어왔습니다</h1>'+
+    '<p class="screen-sub">문장을 소리 내어 읽어 보세요. 읽으면서 이상한 느낌이 드는 곳이 있는지 살펴봅시다.</p>'+
+    '<div class="card sentence-card"><div class="sentence">'+tokensHTML(tokens, f.picked, f.judged!==null)+'</div>'+
+      (f.judged!==null && f.picked.length>0 ? '<div style="margin-top:6px"><span class="link-note">선택한 표현: '+f.picked.map(function(i){return tokens[i];}).join(' ↔ ')+'</span></div>' : '')+
+    '</div>';
+
+  if(f.judged===null){
+    html+='<div class="card"><p class="section-q">이 문장은 자연스럽게 느껴지나요?</p>'+
+      '<p class="section-help">맞히는 문제가 아닙니다. 지금 드는 느낌을 그대로 고르세요.</p>'+
+      '<div class="choice-row">'+
+      '<button class="choice" data-act="first-judge" data-v="nat"><span class="num">●</span>자연스럽다</button>'+
+      '<button class="choice" data-act="first-judge" data-v="odd"><span class="num">●</span>어색하다</button>'+
+      '</div></div>';
+  }else{
+    html+='<div class="card"><p class="section-q">어디가 어색하게 느껴졌나요?</p>'+
+      '<p class="section-help">위 문장에서 서로 어울리지 않는 것 같은 표현을 눌러 보세요. 두 개까지 고를 수 있습니다.</p>'+
+      (f.picked.length===2
+        ? fb('info','두 표현을 골랐군요.','이제 뒤쪽 표현을 직접 바꾸어 보며 무엇이 달라지는지 확인해 봅시다.')
+        : '<p class="section-help" style="margin:0;color:var(--text-muted)">문장 속 단어를 눌러 표시할 수 있습니다.</p>')+
+      '</div>';
+
+    html+='<div class="card"><p class="section-q">표현을 바꾸어 볼까요?</p>'+
+      '<p class="section-help">나는 어제 도서관에 …</p>'+
+      '<div class="choice-row">'+
+      ['간다','갔다','갈 것이다'].map(function(o){
+        return '<button class="choice'+(f.swap===o?' sel':'')+'" data-act="first-swap" data-v="'+o+'"><span class="tick">✓</span>'+o+'</button>';
+      }).join('')+'</div>';
+
+    if(f.swap!=='간다'){
+      html+='<div class="ba"><div class="ba-box"><div class="ba-tag">처음 문장</div><div class="ba-text">나는 어제 도서관에 <mark>간다.</mark></div></div>'+
+        '<div class="ba-arrow">→</div>'+
+        '<div class="ba-box after"><div class="ba-tag">바꾼 문장</div><div class="ba-text">나는 어제 도서관에 <mark>'+f.swap+'.</mark></div></div></div>';
+      html+='<div style="margin-top:26px"><p class="section-q">바꾸고 나니 어떤 점이 달라졌나요?</p>'+
+        '<div class="choice-row" style="margin-top:12px">'+
+        ['더 자연스러워졌다.','더 어색해졌다.','잘 모르겠다.'].map(function(o){
+          return '<button class="choice'+(f.reaction===o?' sel':'')+'" data-act="first-react" data-v="'+o+'"><span class="tick">✓</span>'+o+'</button>';
+        }).join('')+'</div>';
+      if(f.reaction){
+        html+=fb('info','좋은 관찰이에요.','정답을 맞히는 것보다 두 문장을 <b>비교해 본 경험</b>이 더 중요합니다. 이제 진료실로 가서 이런 문장들을 더 살펴봅시다.');
+      }
+      html+='</div>';
+    }
+    html+='</div>';
+  }
+
+  html+='<div class="navrow"><button class="btn btn-ghost" data-act="go" data-to="prologue">← 이전</button><span class="spacer"></span>'+
+    '<button class="btn btn-primary" data-act="go" data-to="hub">진료실로 들어가기 →</button></div>';
+  return html+'</div>';
+};
+
+/* --- 진료실 선택(허브) --- */
+V.hub=function(){
+  var html='<div class="stage">'+
+    '<div class="eyebrow"><span class="chip">문장 클리닉 / 진료실</span><span>탐구한 진단실 '+exploredCount()+' / 4</span></div>'+
+    '<h1 class="screen-title">네 개의 진료실을 모두 돌아봅시다</h1>'+
+    '<p class="screen-sub">진료실마다 환자 문장이 한 명씩 기다리고 있습니다. 표현을 직접 바꾸어 보며 <b>어떤 표현끼리 서로 어울리는지</b> 찾아보세요. 순서는 자유롭게 정해도 됩니다.</p>'+
+    '<div class="grid4">'+
+      DIAGS.map(function(d){
+        var done=S.ex[d.id].done;
+        return '<button class="dcard" data-act="open-diag" data-id="'+d.id+'" data-done="'+(done?1:0)+'">'+
+          iconBox(d)+
+          '<span class="no">'+d.room+'</span>'+
+          '<span class="nm">'+(done?d.name:'이름 없는 증상 '+d.no)+'</span>'+
+          '<span class="pr">'+(done?d.pair:'아직 진단명이 붙지 않았습니다')+'</span>'+
+          '<span class="state">'+(done?'✓ 탐구 완료':'진찰하러 가기 →')+'</span>'+
+        '</button>';
+      }).join('')+
+    '</div>'+
+    '<div class="navrow"><button class="btn btn-ghost" data-act="go" data-to="first">← 이전</button><span class="spacer"></span>'+
+      '<button class="btn btn-primary" data-act="go" data-to="result"'+(allExplored()?'':' disabled')+'>'+
+      (allExplored()?'탐구 결과 보기 →':'네 진료실을 모두 돌아보면 열립니다')+'</button></div>'+
+  '</div>';
+  return html;
+};
+
+/* --- 탐구 화면 --- */
+V.explore=function(){
+  var d=D(S.curDiag), e=EXPLORE[d.id], st=S.ex[d.id];
+  var key=st.a+'|'+st.b, combo=e.combos[key];
+  var cur=[]; e.parts.forEach(function(p){ cur.push(p.slot ? (p.slot==='a'?st.a:st.b) : p.t); });
+  var curSentence=cur.join(' ');
+  var idx=diagIndex(d.id);
+
+  var sentenceHTML=e.parts.map(function(p){
+    if(!p.slot) return '<span class="token plain">'+p.t+'</span>';
+    return '<span class="slot">'+(p.slot==='a'?st.a:st.b)+'</span>';
+  }).join(' ');
+
+  var html='<div class="stage narrow" '+tone(d)+'>'+
+    '<div class="eyebrow"><span class="chip tint">'+d.room+'</span><span>'+e.caseNo+' · 현재 상태: 진단 중</span></div>'+
+    '<h1 class="screen-title">'+e.ask+'</h1>'+
+    '<div class="card sentence-card"><div class="sentence">'+sentenceHTML+'</div>'+
+      (st.touched? '' : '<p class="section-help" style="margin:22px 0 0">지금 이 문장, 두 표현이 서로 잘 어울리나요?</p>')+
+    '</div>'+
+
+    '<div class="card">'+
+      '<p class="section-q">표현을 골라 문장을 바꿔 보세요</p>'+
+      '<p class="section-help">누르면 문장이 바로 바뀝니다. 여러 가지 조합을 만들어 보세요.</p>'+
+      '<div class="slot-group"><p class="slot-label"><span class="bar"></span>'+e.a.label+'</p><div class="choice-row">'+
+        e.a.options.map(function(o){ return '<button class="choice'+(st.a===o?' sel':'')+'" data-act="ex" data-k="a" data-v="'+o+'"><span class="tick">✓</span>'+o+'</button>'; }).join('')+
+      '</div></div>'+
+      '<div class="slot-group"><p class="slot-label"><span class="bar"></span>'+e.b.label+'</p><div class="choice-row">'+
+        e.b.options.map(function(o){ return '<button class="choice'+(st.b===o?' sel':'')+'" data-act="ex" data-k="b" data-v="'+o+'"><span class="tick">✓</span>'+o+'</button>'; }).join('')+
+      '</div></div>'+
+      (st.touched && combo ? fb(combo.ok?'good':'look', combo.ok?'자연스럽게 어울립니다':'한 번 더 살펴볼까요?', combo.m) : '')+
+      (st.touched ? '<div class="ba"><div class="ba-box"><div class="ba-tag">처음 문장</div><div class="ba-text">'+e.before+'</div></div>'+
+        '<div class="ba-arrow">→</div><div class="ba-box after"><div class="ba-tag">지금 문장</div><div class="ba-text">'+curSentence+'</div></div></div>' : '')+
+    '</div>';
+
+  var triedCount=Object.keys(st.tried).length;
+  if(triedCount<2){
+    html+='<p class="section-help" style="text-align:center;margin:22px 0 0">조합을 두 가지 이상 만들어 보면 <b>발견한 짝을 적는 칸</b>이 열립니다.</p>';
+  }
+  if(triedCount>=2){
+    html+='<div class="card reveal">'+
+      '<p class="section-q">내가 발견한 짝</p>'+
+      '<p class="section-help">서로 어울려야 하는 두 표현을 적어 보세요. 낱말을 그대로 써도 좋고, 무엇을 나타내는 말인지로 써도 좋습니다.</p>'+
+      '<div class="pair"><input type="text" id="pa" value="'+st.pa+'" placeholder="예: '+e.a.options[0]+'" aria-label="첫 번째 표현">'+
+      '<span class="sym">↔</span>'+
+      '<input type="text" id="pb" value="'+st.pb+'" placeholder="예: '+e.b.options[0]+'" aria-label="두 번째 표현">'+
+      '<button class="btn btn-soft" data-act="pair-save" style="height:52px">이 짝으로 기록하기</button></div>';
+    if(st.done){
+      html+='<div class="reveal" style="margin-top:24px;border-top:1px solid var(--border);padding-top:24px">'+
+        '<p class="section-help" style="margin-bottom:12px">'+e.close+'</p>'+
+        '<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:var(--c-soft);border-radius:16px;padding:20px">'+
+          iconBox(d,44)+
+          '<div><div style="font-size:13.5px;font-weight:700;color:'+d.color+'">이 증상의 진단명</div>'+
+          '<div style="font-size:23px;font-weight:700;letter-spacing:-.02em;line-height:1.3">'+d.name+'</div>'+
+          '<div style="font-size:15.5px;color:var(--text-secondary);font-weight:600;margin-top:2px">살펴볼 짝 · '+d.pair+'</div></div>'+
+        '</div></div>';
+    }
+    html+='</div>';
+  }
+
+  var next = idx<3 ? DIAGS[idx+1] : null;
+  html+='<div class="navrow"><button class="btn btn-ghost" data-act="go" data-to="hub">← 진료실 목록</button><span class="spacer"></span>'+
+    (next ? '<button class="btn btn-primary" data-act="open-diag" data-id="'+next.id+'">다음 진찰하기 →</button>'
+          : '<button class="btn btn-primary" data-act="go" data-to="'+(allExplored()?'result':'hub')+'">'+(allExplored()?'탐구 결과 보기 →':'진료실 목록으로 →')+'</button>')+
+  '</div></div>';
+  return html;
+};
+
+/* --- 탐구 결과 --- */
+V.result=function(){
+  var html='<div class="stage">'+
+    '<div class="eyebrow"><span class="chip live">진단 완료</span><span>오늘 발견한 호응 관계</span></div>'+
+    '<h1 class="screen-title">문장 진단 완료!</h1>'+
+    '<p class="screen-sub">문장 속 표현에는 <b>서로 잘 어울리는 짝</b>이 있다는 사실을 발견했습니다. 여러분이 찾아낸 네 가지 증상에 이름을 붙였습니다.</p>'+
+    '<div class="grid4">'+
+      DIAGS.map(function(d){
+        var st=S.ex[d.id];
+        return '<div class="dcard" style="cursor:default">'+iconBox(d)+
+          '<span class="no">'+d.no+'</span>'+
+          '<span class="nm">'+d.name+'</span>'+
+          '<span class="pr">'+d.pair+'</span>'+
+          (st.pa||st.pb ? '<span class="state" style="color:var(--text-secondary)">내가 적은 짝 · '+(st.pa||'—')+' ↔ '+(st.pb||'—')+'</span>' : '')+
+        '</div>';
+      }).join('')+
+    '</div>'+
+    '<div class="card" style="margin-top:22px;text-align:center">'+
+      '<p style="font-size:21px;font-weight:700;letter-spacing:-.02em;margin:0">이제 문장 치료를 시작합니다.</p>'+
+      '<p class="section-help" style="margin:8px 0 0">그 전에 종이 진단서를 먼저 완성해 봅시다.</p>'+
+    '</div>'+
+    '<div class="navrow"><button class="btn btn-ghost" data-act="go" data-to="hub">← 진료실 목록</button><span class="spacer"></span>'+
+      '<button class="btn btn-primary" data-act="go" data-to="chart">문장 진단서 쓰러 가기 →</button></div>'+
+  '</div>';
+  return html;
+};
+
+/* --- 진단서 참고 화면 --- */
+V.chart=function(){
+  var html='<div class="stage narrow">'+
+    '<div class="eyebrow"><span class="chip live">진단서 작성 시간</span><span>화면은 참고 자료입니다</span></div>'+
+    '<h1 class="screen-title">문장 진단서를 완성해 봅시다</h1>'+
+    '<p class="screen-sub">종이 진단서에 네 가지 진단명과 살펴볼 짝을 적고, <b>예시 문장은 직접 만들어</b> 써넣으세요. 진단명을 누르면 오늘 탐구한 사례를 다시 볼 수 있습니다.</p>'+
+    '<div class="paper"><span class="ic">✎</span><span>이 화면은 진단서를 대신 써 주지 않습니다. 예시 문장은 여러분이 직접 만들어 종이에 적습니다.</span></div>'+
+    '<div style="margin-top:22px">'+
+    DIAGS.map(function(d){
+      var e=EXPLORE[d.id], st=S.ex[d.id], open=S.openRef===d.id;
+      var s='<div class="ref-row" '+tone(d)+'>'+
+        '<button class="ref-head" data-act="ref" data-id="'+d.id+'" aria-expanded="'+open+'">'+iconBox(d,38)+
+        '<span><span class="ref-name">'+d.name+'</span><br><span class="ref-pair">'+d.pair+'</span></span>'+
+        '<span class="ref-open">'+(open?'닫기 ▲':'사례 보기 ▼')+'</span></button>';
+      if(open){
+        var goodKey=null;
+        for(var k in e.combos){ if(e.combos[k].ok){ goodKey=k; break; } }
+        var ga=goodKey.split('|')[0], gb=goodKey.split('|')[1];
+        s+='<div class="ref-body">'+
+          '<p class="ref-line" style="margin-top:16px">탐구한 문장</p>'+
+          '<p class="ref-ex">'+e.before+'</p>'+
+          '<p class="ref-line">서로 어울려야 하는 짝 · <b style="color:'+d.color+'">'+ga+' ↔ '+gb+'</b></p>'+
+          (st.pa||st.pb ? '<div class="mine">내가 적은 짝 · <b>'+(st.pa||'—')+' ↔ '+(st.pb||'—')+'</b></div>' : '')+
+          '<div class="mine">종이 진단서에는 <b>내가 만든 예시 문장</b>을 적습니다.</div>'+
+        '</div>';
+      }
+      return s+'</div>';
+    }).join('')+
+    '</div>'+
+    '<div class="card" style="margin-top:22px"><p class="section-q">종이 진단서에 적을 내용</p>'+
+      '<table class="wk"><thead><tr><th>진단명</th><th>살펴볼 짝</th><th>내가 만든 예시</th></tr></thead><tbody>'+
+      DIAGS.map(function(d){ return '<tr><td>'+d.name+'</td><td>'+d.pair+'</td><td class="blank">직접 써 봅시다</td></tr>'; }).join('')+
+      '</tbody></table></div>'+
+    '<div class="navrow"><button class="btn btn-ghost" data-act="go" data-to="result">← 이전</button><span class="spacer"></span>'+
+      '<button class="btn btn-primary" data-act="go" data-to="cases">문장 처방하러 가기 →</button></div>'+
+  '</div>';
+  return html;
+};
+
+/* --- 활동 2: 처방 --- */
+V.cases=function(){
+  var i=S.caseIdx, c=CASES[i], st=S.cs[i], d=D(c.diag);
+  var toneStr = st.stage>=2 ? tone(d) : 'style="--c:#2563EB;--c-soft:#E8F0FF"';
+
+  var html='<div class="stage narrow" '+toneStr+'>'+
+    '<div class="eyebrow"><span class="chip">CASE '+pad(i+1)+'</span><span>현재 상태: '+
+      (st.stage===0?'접수':(st.judge==='nat'&&c.natural?'진료 종료':'치료 중'))+'</span></div>'+
+    '<div class="card sentence-card"><div class="sentence">'+
+      tokensHTML(c.tokens, st.stage===2?st.marks:(st.stage>=3?(c.bad||[]):[]), st.stage===2)+
+    '</div></div>';
+
+  /* 0. 정상 / 치료 필요 */
+  html+='<div class="card"><p class="section-q">이 문장은 건강한가요?</p>'+
+    '<p class="section-help">모둠에서 먼저 이야기를 나눈 뒤, 모둠의 판단을 눌러 주세요.</p>'+
+    '<div class="choice-row">'+
+    '<button class="choice'+(st.judge==='nat'?' sel':'')+'" data-act="c-judge" data-v="nat"><span class="num">정</span>정상</button>'+
+    '<button class="choice'+(st.judge==='fix'?' sel':'')+'" data-act="c-judge" data-v="fix"><span class="num">치</span>치료 필요</button>'+
+    '</div>'+(st.stage===0?(st.msg||''):'')+'</div>';
+
+  /* 1. 진단명 선택 */
+  if(st.stage>=1 && !c.natural && st.judge==='fix'){
+    html+='<div class="card reveal"><p class="section-q">어디가 이상할까요?</p>'+
+      '<p class="section-help">진단명을 하나 고르세요.</p>'+
+      '<div class="choice-row" style="flex-direction:column">'+
+      DIAGS.map(function(dd,n){
+        var sel = st.diag===dd.id;
+        return '<button class="choice wide'+(sel?' sel':'')+'" data-act="c-diag" data-id="'+dd.id+'" style="--c:'+dd.color+';--c-soft:'+dd.soft+'">'+
+          '<span class="num">'+(n+1)+'</span>'+dd.name+
+          '<span style="margin-left:auto;font-size:14.5px;font-weight:600;color:var(--text-secondary)">'+dd.pair+'</span></button>';
+      }).join('')+'</div>'+(st.stage===1?(st.msg||''):'')+'</div>';
+  }
+
+  /* 2. 어색한 부분 표시 */
+  if(st.stage>=2){
+    html+='<div class="card reveal"><p class="section-q">어색한 부분을 표시해 봅시다</p>'+
+      '<p class="section-help">위 문장에서 서로 어울리지 않는 표현을 눌러 표시하세요. 표시한 곳은 처방전에도 똑같이 옮겨 적습니다.</p>'+
+      (st.stage===2
+        ? '<button class="btn btn-soft" data-act="c-mark-done">표시 완료</button>'
+        : fb('info','표시한 곳','문장에서 '+(c.bad||[]).map(function(n){return '‘'+c.tokens[n]+'’';}).join('와 ')+'가 서로 어긋난 짝이었습니다.'))+
+      (st.stage===2 ? (st.msg||'') : '')+'</div>';
+  }
+
+  /* 3. 올바른 표현 고르기 */
+  if(st.stage>=3){
+    html+='<div class="card reveal"><p class="section-q">올바른 표현으로 고쳐 봅시다</p>'+
+      '<p class="section-help">'+c.tokens.slice(0, c.fix[0]).join(' ')+' …</p>'+
+      '<div class="choice-row">'+
+      c.options.map(function(o,n){
+        return '<button class="choice'+(st.fix===n?' sel':'')+'" data-act="c-fix" data-n="'+n+'"><span class="tick">✓</span>'+o+'</button>';
+      }).join('')+'</div>'+(st.stage===3?(st.msg||''):'')+'</div>';
+  }
+
+  /* 4. 치료 결과 */
+  if(st.stage>=4){
+    html+='<div class="card reveal"><p class="section-q">치료 결과</p>'+
+      '<div class="ba" style="margin-top:14px"><div class="ba-box"><div class="ba-tag">치료 전</div><div class="ba-text">'+markSentence(c.tokens,c.bad)+'</div></div>'+
+      '<div class="ba-arrow">→</div><div class="ba-box after"><div class="ba-tag">치료 후</div><div class="ba-text">'+c.corrected+'</div></div></div>'+
+      fb('good','진단 성공!',c.explain)+
+      '<div class="paper" style="margin-top:18px"><span class="ic">✎</span><span><b>처방전 작성 시간</b><br>왜 이렇게 고쳤는지 모둠의 말로 처방전에 적은 뒤 다음 환자로 넘어갑니다.</span></div>'+
+    '</div>';
+  }
+
+  /* 정상 문장 처리 */
+  if(c.natural && st.judge==='nat'){
+    html+='<div class="card reveal">'+fb('good','진단 성공! 이 문장은 건강합니다.',c.healthy)+
+      '<div class="paper" style="margin-top:18px"><span class="ic">✎</span><span><b>처방전 작성 시간</b><br>처방전의 ‘정상’ 칸에 표시하고, 왜 정상인지 한 문장으로 적어 봅시다.</span></div></div>';
+  }
+
+  html+='<div class="navrow">'+
+    '<button class="btn btn-ghost" data-act="c-prev">← 이전</button><span class="spacer"></span>'+
+    (i<CASES.length-1
+      ? '<button class="btn btn-primary" data-act="c-next">다음 환자 →</button>'
+      : '<button class="btn btn-primary" data-act="go" data-to="seminar">세미나 열러 가기 →</button>')+
+  '</div></div>';
+  return html;
+};
+
+/* --- 활동 3: 세미나 --- */
+V.seminar=function(){
+  var list=CASES.filter(function(c){ return !c.natural; });
+  var c=list[S.seminarIdx], d=D(c.diag), stg=S.seminarStage;
+  var html='<div class="stage narrow" '+tone(d)+'>'+
+    '<div class="eyebrow"><span class="chip live">문장 클리닉 세미나</span><span>오늘의 대표 환자</span></div>'+
+    '<div class="pill-nav" style="margin-top:18px">'+
+      list.map(function(x,n){ return '<button class="pill'+(n===S.seminarIdx?' on':'')+'" data-act="sem-pick" data-n="'+n+'">'+pad(n+1)+'</button>'; }).join('')+
+    '</div>'+
+    '<div class="card seminar-case"><div class="sentence">'+tokensHTML(c.tokens, stg>=1?c.bad:[], false)+'</div></div>'+
+    '<div class="card">'+
+      (stg>=1
+        ? '<div class="reveal" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><span style="font-size:14px;font-weight:700;color:var(--text-secondary)">진단명</span>'+
+          '<span style="display:inline-flex;align-items:center;gap:10px;background:var(--c-soft);color:var(--c);padding:10px 18px;border-radius:14px;font-size:20px;font-weight:700">'+ICON[d.id].replace('<svg','<svg style="width:20px;height:20px"')+d.name+'</span>'+
+          '<span style="font-size:15.5px;color:var(--text-secondary);font-weight:600">'+d.pair+'</span></div>'
+        : '<button class="btn btn-soft" data-act="sem-stage" data-n="1">진단명 공개</button>')+
+      (stg>=2
+        ? '<div class="ba reveal" style="margin-top:22px"><div class="ba-box"><div class="ba-tag">치료 전</div><div class="ba-text">'+markSentence(c.tokens,c.bad)+'</div></div>'+
+          '<div class="ba-arrow">→</div><div class="ba-box after"><div class="ba-tag">치료 후</div><div class="ba-text">'+c.corrected+'</div></div></div>'
+        : (stg>=1 ? '<div style="margin-top:20px"><button class="btn btn-soft" data-act="sem-stage" data-n="2">치료 후 문장 공개</button></div>' : ''))+
+      '<p class="seminar-q">왜 이렇게 치료했을까요?</p>'+
+      (stg>=3 ? '<div class="reveal">'+fb('info','발표를 들은 뒤 확인하기',c.explain)+'</div>'
+              : (stg>=2 ? '<div style="text-align:center;margin-top:18px"><button class="btn btn-ghost" data-act="sem-stage" data-n="3">모둠 발표 뒤 확인하기</button></div>' : ''))+
+    '</div>'+
+    '<div class="navrow"><button class="btn btn-ghost" data-act="go" data-to="cases">← 처방으로</button><span class="spacer"></span>'+
+      '<button class="btn btn-primary" data-act="go" data-to="summary">오늘 배운 것 정리하기 →</button></div>'+
+  '</div>';
+  return html;
+};
+
+/* --- 정리 --- */
+V.summary=function(){
+  var html='<div class="stage narrow">'+
+    '<div class="eyebrow"><span class="chip live">문장 건강검진 완료</span></div>'+
+    '<h1 class="screen-title">오늘 발견한 네 가지 짝</h1>'+
+    '<div class="card"><div class="sum-list">'+
+      DIAGS.map(function(d){
+        return '<div class="sum-item">'+iconBox(d,34)+'<span>'+d.pair+'</span>'+
+          '<span style="margin-left:auto;font-size:14.5px;font-weight:600;color:var(--text-secondary)">'+d.name+'</span></div>';
+      }).join('')+
+    '</div>'+
+    '<p class="sum-final">문장 속 표현은 서로 잘 어울리는 짝을 이루어야 합니다.</p></div>'+
+    '<div class="card"><p class="section-q">문장을 쓸 때 무엇을 확인하면 좋을까요?</p>'+
+      '<p class="section-help">오늘 배운 것을 자신의 말로 적어 보세요. 적은 내용은 저장되지 않으니, 발표하거나 공책에 옮겨 적습니다.</p>'+
+      '<textarea class="note" id="finalNote" placeholder="예: 문장을 쓴 뒤에 주어와 서술어가 어울리는지 다시 읽어 본다."></textarea></div>'+
+    '<div class="navrow"><button class="btn btn-ghost" data-act="go" data-to="seminar">← 세미나</button><span class="spacer"></span>'+
+      '<button class="btn btn-primary" data-act="restart">처음으로</button></div>'+
+  '</div>';
+  return html;
+};
+
+/* ======================================================================
+   8. 렌더 · 이벤트
+   ====================================================================== */
+function render(keepScroll){
+  var y=window.scrollY;
+  document.getElementById('stage').innerHTML = V[S.screen]();
+  paintHeader();
+  if(keepScroll) window.scrollTo(0,y); else window.scrollTo(0,0);
+}
+
+document.addEventListener('click',function(ev){
+  var el=ev.target.closest('[data-act]');
+  if(!el || el.disabled) return;
+  var act=el.getAttribute('data-act');
+
+  if(act==='go'){
+    var to=el.getAttribute('data-to');
+    if(to==='cases'){ S.screen='cases'; }
+    else S.screen=to;
+    render(); return;
+  }
+  if(act==='restart'){
+    S.screen='home'; render(); return;
+  }
+
+  /* 첫 진찰 */
+  if(act==='first-judge'){ S.first.judged=el.getAttribute('data-v'); render(true); return; }
+  if(act==='tok' && S.screen==='first'){
+    var i=+el.getAttribute('data-i'), p=S.first.picked, pos=p.indexOf(i);
+    if(pos>=0) p.splice(pos,1); else { p.push(i); if(p.length>2) p.shift(); }
+    render(true); return;
+  }
+  if(act==='first-swap'){ S.first.swap=el.getAttribute('data-v'); S.first.reaction=null; render(true); return; }
+  if(act==='first-react'){ S.first.reaction=el.getAttribute('data-v'); render(true); return; }
+
+  /* 탐구 */
+  if(act==='open-diag'){ S.curDiag=el.getAttribute('data-id'); S.screen='explore'; render(); return; }
+  if(act==='ex'){
+    var st=S.ex[S.curDiag];
+    st[el.getAttribute('data-k')]=el.getAttribute('data-v');
+    st.touched=1; st.tried[st.a+'|'+st.b]=1;
+    render(true); return;
+  }
+  if(act==='pair-save'){
+    var s2=S.ex[S.curDiag];
+    s2.pa=(document.getElementById('pa').value||'').trim();
+    s2.pb=(document.getElementById('pb').value||'').trim();
+    s2.done=true; render(true); return;
+  }
+  if(act==='ref'){ var id=el.getAttribute('data-id'); S.openRef = (S.openRef===id? null : id); render(true); return; }
+
+  /* 처방 */
+  if(act==='c-judge'){
+    var i2=S.caseIdx, c=CASES[i2], s3=S.cs[i2], v=el.getAttribute('data-v');
+    s3.judge=v; s3.msg=null;
+    if(c.natural && v==='nat'){ s3.stage=1; }
+    else if(c.natural && v==='fix'){ s3.msg=fb('look','한 번 더 진찰해 볼까요?','이 문장의 주어와 서술어, 시간 표현을 차례로 짚어 보세요. 모두 짝이 맞는지 확인해 봅시다.'); s3.judge=null; }
+    else if(!c.natural && v==='fix'){ s3.stage=1; }
+    else { s3.msg=fb('look','좋은 시도예요.',c.hint); s3.judge=null; }
+    render(true); return;
+  }
+  if(act==='c-diag'){
+    var i3=S.caseIdx, c3=CASES[i3], s4=S.cs[i3], pick=el.getAttribute('data-id');
+    s4.diag=pick;
+    if(pick===c3.diag){ s4.stage=2; s4.msg=null; }
+    else { s4.msg=fb('look','다시 살펴볼까요?',c3.hint); s4.stage=1; }
+    render(true); return;
+  }
+  if(act==='tok' && S.screen==='cases'){
+    var s5=S.cs[S.caseIdx];
+    if(s5.stage!==2) return;
+    var n=+el.getAttribute('data-i'), q=s5.marks.indexOf(n);
+    if(q>=0) s5.marks.splice(q,1); else s5.marks.push(n);
+    render(true); return;
+  }
+  if(act==='c-mark-done'){
+    var i4=S.caseIdx, c4=CASES[i4], s6=S.cs[i4];
+    var hit=c4.bad.every(function(n){ return s6.marks.indexOf(n)>=0; });
+    if(hit){ s6.stage=3; s6.msg=null; }
+    else { s6.msg=fb('look','조금 더 찾아볼까요?',c4.hint+' 짝을 이루는 표현은 보통 두 군데에 있습니다.'); }
+    render(true); return;
+  }
+  if(act==='c-fix'){
+    var i5=S.caseIdx, c5=CASES[i5], s7=S.cs[i5], k=+el.getAttribute('data-n');
+    s7.fix=k;
+    if(k===c5.answer){ s7.stage=4; s7.msg=null; }
+    else { s7.msg=fb('look','한 번 더 읽어 볼까요?','고른 표현을 넣어 문장 전체를 소리 내어 읽어 보세요. 앞의 표현과 잘 어울리나요?'); }
+    render(true); return;
+  }
+  if(act==='c-next'){ if(S.caseIdx<CASES.length-1){ S.caseIdx++; render(); } return; }
+  if(act==='c-prev'){
+    if(S.caseIdx>0){ S.caseIdx--; render(); }
+    else { S.screen='chart'; render(); }
+    return;
+  }
+
+  /* 세미나 */
+  if(act==='sem-pick'){ S.seminarIdx=+el.getAttribute('data-n'); S.seminarStage=0; render(true); return; }
+  if(act==='sem-stage'){ S.seminarStage=+el.getAttribute('data-n'); render(true); return; }
+});
+
+/* 입력값 유지 */
+document.addEventListener('input',function(ev){
+  if(ev.target.id==='pa') S.ex[S.curDiag].pa=ev.target.value;
+  if(ev.target.id==='pb') S.ex[S.curDiag].pb=ev.target.value;
+});
+
+render();
+})();
+</script>
+</body>
+</html>
