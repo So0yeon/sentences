@@ -42,12 +42,14 @@ button{font-family:inherit;}
 .flow{border-bottom:1px solid var(--border);background:var(--surface);}
 .flow-inner{max-width:1200px;margin:0 auto;padding:11px 28px;display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none;}
 .flow-inner::-webkit-scrollbar{display:none;}
-.flow-step{display:flex;align-items:center;gap:7px;font-size:14px;color:var(--text-muted);white-space:nowrap;padding:3px 2px;}
-.flow-step .dot{width:19px;height:19px;border-radius:50%;border:1.8px solid var(--border);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--text-muted);background:var(--surface);}
+.flow-step{display:flex;align-items:center;gap:7px;font-size:14px;color:var(--text-muted);white-space:nowrap;padding:5px 6px;border-radius:9px;border:0;background:none;font-family:inherit;cursor:pointer;transition:background 140ms ease,color 140ms ease;}
+.flow-step:hover{background:var(--surface-soft);color:var(--text-secondary);}
+.flow-step .dot{width:19px;height:19px;border-radius:50%;border:1.8px solid var(--border);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--text-muted);background:var(--surface);flex:none;}
 .flow-step.done{color:var(--text-secondary);}
 .flow-step.done .dot{background:var(--mint-soft);border-color:#A7E8CE;color:#047857;}
 .flow-step.now{color:var(--text-primary);font-weight:700;}
 .flow-step.now .dot{background:var(--navy);border-color:var(--navy);color:#fff;}
+.flow-step.now:hover{background:var(--primary-soft);}
 .flow-line{width:18px;height:1.5px;background:var(--border);flex:none;}
 
 /* ---------- Layout ---------- */
@@ -137,6 +139,14 @@ p.screen-sub{font-size:17px;color:var(--text-secondary);margin:0 0 28px;max-widt
 .dcard[data-done="1"]{border-color:#BDE9D6;}
 .dcard[data-done="1"] .state{color:#047857;}
 
+/* ---------- Diary (composite prescription) ---------- */
+.diary-text{font-size:17px;line-height:2.1;}
+button.diary-sent{font:inherit;color:inherit;background:none;border:0;padding:3px 7px;border-radius:8px;cursor:pointer;transition:background 140ms ease,color 140ms ease;}
+button.diary-sent:hover{background:var(--surface-soft);}
+button.diary-sent.on{background:var(--c-soft);color:var(--c);font-weight:700;box-shadow:inset 0 -2px 0 var(--c);}
+span.diary-sent{padding:3px 7px;border-radius:8px;}
+span.diary-sent.bad-reveal{background:#FEF3E2;color:#92400E;font-weight:700;box-shadow:inset 0 -2px 0 #F59E0B;}
+
 /* ---------- Chart / reference ---------- */
 .ref-row{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--surface);}
 .ref-row + .ref-row{margin-top:12px;}
@@ -187,6 +197,7 @@ table.wk td.blank{color:var(--text-muted);}
 .mission strong{display:block;margin-top:6px;font-size:17px;color:var(--text-secondary);font-weight:600;}
 .pro-line{font-size:clamp(22px,3vw,30px);font-weight:700;letter-spacing:-.03em;line-height:1.5;margin:0 0 16px;opacity:0;animation:rise 500ms ease forwards;}
 .pro-line.sub{font-size:clamp(17px,2vw,20px);font-weight:500;color:var(--text-secondary);}
+.speech{margin-top:14px;padding:14px 18px;background:var(--surface-soft);border-left:4px solid var(--c);border-radius:0 14px 14px 0;font-size:17px;font-weight:600;font-style:italic;line-height:1.6;}
 
 /* ---------- Seminar ---------- */
 .seminar-case{padding:48px 32px;text-align:center;}
@@ -204,6 +215,51 @@ table.wk td.blank{color:var(--text-muted);}
 textarea.note{width:100%;min-height:110px;font:inherit;font-size:17px;padding:16px;border:1.5px solid var(--border);border-radius:14px;resize:vertical;background:var(--surface);color:var(--text-primary);}
 textarea.note:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
 
+/* ---------- Mini-game sidebar ---------- */
+.game-tab{position:fixed;top:50%;right:0;transform:translateY(-50%);z-index:40;background:var(--navy);color:#fff;border:0;border-radius:14px 0 0 14px;padding:16px 9px;display:flex;flex-direction:column;align-items:center;gap:7px;font-size:12.5px;font-weight:700;cursor:pointer;box-shadow:-4px 0 16px rgba(15,23,42,.16);transition:right 220ms ease,background 160ms ease;letter-spacing:.02em;}
+.game-tab span:first-child{font-size:19px;}
+.game-tab span:last-child{writing-mode:vertical-rl;}
+.game-tab:hover{background:#1B3462;}
+.game-tab.open{right:300px;}
+
+.game-panel{position:fixed;top:0;right:-300px;width:300px;max-width:86vw;height:100%;background:var(--surface);border-left:1px solid var(--border);box-shadow:-8px 0 24px rgba(15,23,42,.10);z-index:39;transition:right 220ms ease;display:flex;flex-direction:column;}
+.game-panel.open{right:0;}
+.game-panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border);font-size:16px;font-weight:700;flex:none;}
+.game-x{border:0;background:var(--surface-soft);width:30px;height:30px;border-radius:9px;cursor:pointer;font-size:14px;color:var(--text-secondary);}
+.game-list{padding:16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;}
+.game-card{border:1px solid var(--border);border-radius:16px;padding:16px;background:var(--surface);}
+.game-card .gc-top{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.game-card .gc-ico{width:38px;height:38px;border-radius:11px;background:var(--primary-soft);display:grid;place-items:center;font-size:19px;flex:none;}
+.game-card .gc-name{font-size:15.5px;font-weight:700;letter-spacing:-.01em;}
+.game-card .gc-best{font-size:12px;color:var(--text-muted);font-weight:700;margin-left:auto;white-space:nowrap;}
+.game-card .gc-tag{display:inline-block;font-size:12px;font-weight:700;color:#1D4ED8;background:var(--primary-soft);padding:3px 9px;border-radius:999px;margin-bottom:8px;}
+.game-card .gc-desc{font-size:13.5px;color:var(--text-secondary);line-height:1.55;margin:0 0 12px;}
+.game-card .btn{width:100%;height:42px;font-size:14.5px;}
+
+/* ---------- Mini-game modal ---------- */
+.game-modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:60;display:none;align-items:center;justify-content:center;padding:20px;}
+.game-modal.show{display:flex;}
+.game-box{background:var(--surface);border-radius:22px;width:100%;max-width:840px;max-height:94vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(15,23,42,.3);}
+.game-box-head{display:flex;align-items:center;gap:14px;padding:18px 24px;border-bottom:1px solid var(--border);flex:none;}
+.game-box-head .gt{font-size:19px;font-weight:700;flex:1;}
+.game-hud{display:flex;gap:20px;font-size:16.5px;font-weight:700;color:var(--text-secondary);white-space:nowrap;}
+.game-hud b{color:var(--text-primary);font-size:18px;}
+.game-box-body{padding:26px;overflow-y:auto;}
+.game-desc{font-size:17px;color:var(--text-secondary);line-height:1.75;margin:0;}
+.rain-stage{position:relative;width:100%;aspect-ratio:16/9;min-height:280px;max-height:480px;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#DCEBFF 0%,#EFF6FF 55%,#F7FAFF 100%);border:1px solid var(--border);}
+.rain-ground{position:absolute;left:0;right:0;bottom:0;height:6px;background:#94A3B8;}
+.rain-item{position:absolute;top:-60px;left:8px;max-width:min(72%,420px,calc(100% - 16px));box-sizing:border-box;background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:13px 18px;font-size:19px;font-weight:700;line-height:1.5;cursor:pointer;box-shadow:0 4px 10px rgba(15,23,42,.08);font-family:inherit;}
+.rain-item:hover{border-color:var(--primary);}
+.rain-item.pop{opacity:0;transform:scale(.5);}
+.rain-item.miss{opacity:0;}
+.rain-stage.shake{animation:shake 260ms ease;}
+@keyframes shake{10%,90%{transform:translateX(-2px);}20%,80%{transform:translateX(4px);}30%,50%,70%{transform:translateX(-8px);}40%,60%{transform:translateX(8px);}}
+.game-tip{margin-top:16px;font-size:16px;color:var(--text-secondary);text-align:center;}
+.game-result{text-align:center;padding:14px 0;}
+.game-result h2{font-size:25px!important;}
+.game-result .game-desc{text-align:center;}
+.game-result .gr-score{font-size:52px;font-weight:800;letter-spacing:-.03em;margin:10px 0;}
+
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 @media(max-width:640px){
@@ -214,6 +270,15 @@ textarea.note:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3p
   .btn{width:100%;}
   .navrow{flex-direction:column-reverse;}
   .navrow .btn{width:100%;}
+  .game-tab{padding:12px 7px;font-size:11.5px;}
+  .game-tab span:first-child{font-size:16px;}
+  .game-tab.open{right:86vw;}
+  .game-box-body{padding:16px;}
+  .game-box-head{padding:14px 16px;}
+  .game-hud{gap:12px;font-size:14px;}
+  .game-hud b{font-size:15px;}
+  .rain-item{font-size:16px;padding:10px 14px;max-width:min(80%,320px,calc(100% - 16px));}
+  .rain-stage{aspect-ratio:4/3;min-height:240px;max-height:400px;}
 }
 </style>
 </head>
@@ -229,6 +294,18 @@ textarea.note:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3p
 </header>
 <nav class="flow" id="flow" aria-label="수업 진행 단계"><div class="flow-inner" id="flowInner"></div></nav>
 <main id="stage"></main>
+
+<button type="button" id="gameTab" class="game-tab" data-act="game-toggle" aria-expanded="false" aria-controls="gamePanel">
+  <span aria-hidden="true">🎮</span><span>미니게임</span>
+</button>
+<aside id="gamePanel" class="game-panel" aria-hidden="true" aria-label="미니게임 목록">
+  <div class="game-panel-head">
+    <span>🕹️ 미니게임</span>
+    <button type="button" class="game-x" data-act="game-toggle" aria-label="미니게임 바 닫기">✕</button>
+  </div>
+  <div class="game-list" id="gameList"></div>
+</aside>
+<div id="gameModal" class="game-modal"></div>
 
 <script>
 (function(){
@@ -395,7 +472,29 @@ var CASES = [
     bad:[2,4], fix:[4], options:['고프지 않았다.','고팠다.','고프다.'], answer:0,
     corrected:'오늘 아침에는 전혀 배가 고프지 않았다.',
     explain:'‘전혀’ 뒤에는 ‘~않다’가 와야 앞말과 뒷말의 짝이 맞습니다.',
-    hint:'‘전혀’라는 말이 어떤 표현을 기다리고 있는지 살펴보세요.' }
+    hint:'‘전혀’라는 말이 어떤 표현을 기다리고 있는지 살펴보세요.' },
+
+  { id:'diary-01', diag:'diary', type:'diary', natural:false,
+    diaryTitle:'서준이의 하루 (10월 15일 목요일)',
+    diaryAsk:'일기 속에는 호응이 어긋난 문장이 3개 숨어 있습니다. 어색하다고 생각되는 문장을 눌러 표시해 보세요.',
+    sentences:[
+      { t:'오늘 아침 나는 여섯 시 반에 일어났다.', bad:false },
+      { t:'세수를 하고 밥을 먹은 뒤 학교 갈 준비를 했다.', bad:false },
+      { t:'학교에 가는 길에 정민이를 만나서 함께 걸어갔다.', bad:false },
+      { t:'어제 나는 도서관에서 재미있는 책을 빌릴 것이다.', bad:true, diag:'time',
+        corrected:'어제 나는 도서관에서 재미있는 책을 빌렸다.',
+        explain:'‘어제’는 지나간 때를 나타내므로 ‘빌릴 것이다’가 아니라 ‘빌렸다’로 써야 시간 표현과 서술어가 서로 어울립니다.' },
+      { t:'점심시간에는 짝과 함께 급식을 먹었다.', bad:false },
+      { t:'사실 오늘 급식 반찬은 별로 맛있었다.', bad:true, diag:'nega',
+        corrected:'사실 오늘 급식 반찬은 별로 맛있지 않았다.',
+        explain:'‘별로’ 다음에는 ‘~않다’와 같이 부정하는 말이 와야 앞말과 뒷말이 서로 어울립니다.' },
+      { t:'수업이 끝난 뒤에는 운동장에서 축구를 했다.', bad:false },
+      { t:'집에 돌아오니 할머니께서 마당에서 화분을 돌보고 계셨다.', bad:false },
+      { t:'저녁에는 할머니께서 내가 좋아하는 된장국을 끓였다.', bad:true, diag:'honor',
+        corrected:'저녁에는 할머니께서 내가 좋아하는 된장국을 끓이셨다.',
+        explain:'높여야 할 대상에게는 조사 ‘께서’와 서술어의 높임 표현 ‘-시-’를 함께 써야 합니다.' },
+      { t:'오늘 하루도 무사히 잘 보낸 것 같아 마음이 뿌듯했다.', bad:false }
+    ] }
 ];
 
 /* ======================================================================
@@ -403,6 +502,7 @@ var CASES = [
    ====================================================================== */
 var S = {
   screen:'home',
+  pro:{ stage:0, hint1:false, hint2:false },
   first:{ judged:null, picked:[], swap:'간다', reaction:null },
   ex:{},          /* 탐구 상태 */
   curDiag:'comp',
@@ -411,11 +511,11 @@ var S = {
   cs:{},          /* 케이스 상태 */
   seminarIdx:0, seminarStage:0
 };
-DIAGS.forEach(function(d){ S.ex[d.id]={ a:EXPLORE[d.id].a.init, b:EXPLORE[d.id].b.init, touched:0, tried:{}, pa:'', pb:'', done:false }; });
+DIAGS.forEach(function(d){ S.ex[d.id]={ a:EXPLORE[d.id].a.init, b:EXPLORE[d.id].b.init, touched:0, tried:{}, pa:'', pb:'', done:false, visited:false }; });
 CASES.forEach(function(c,i){ S.cs[i]={ stage:0, judge:null, diag:null, marks:[], fix:null, msg:null }; });
 
-function allExplored(){ return DIAGS.every(function(d){ return S.ex[d.id].done; }); }
-function exploredCount(){ var n=0; DIAGS.forEach(function(d){ if(S.ex[d.id].done) n++; }); return n; }
+function allVisited(){ return DIAGS.every(function(d){ return S.ex[d.id].visited; }); }
+function visitedCount(){ var n=0; DIAGS.forEach(function(d){ if(S.ex[d.id].visited) n++; }); return n; }
 
 /* ======================================================================
    5. 헤더 · 진행 표시
@@ -450,14 +550,14 @@ function paintHeader(){
     var cls = i<cur ? 'done' : (i===cur ? 'now' : '');
     var dot = i<cur ? '✓' : String(i+1);
     if(i>0) html+='<span class="flow-line"></span>';
-    html+='<span class="flow-step '+cls+'"><span class="dot">'+dot+'</span>'+f.label+'</span>';
+    html+='<button type="button" class="flow-step '+cls+'" data-act="flow-jump" data-key="'+f.key+'" aria-current="'+(i===cur?'step':'false')+'"><span class="dot">'+dot+'</span>'+f.label+'</button>';
   });
   inner.innerHTML=html;
 
   var c='';
   if(S.screen==='explore') c='진단 '+(diagIndex(S.curDiag)+1)+' / 4';
-  else if(S.screen==='hub'||S.screen==='result') c='진단 '+exploredCount()+' / 4';
-  else if(S.screen==='cases') c='CASE '+pad(S.caseIdx+1)+' / 12';
+  else if(S.screen==='hub'||S.screen==='result') c='진단 '+visitedCount()+' / 4';
+  else if(S.screen==='cases') c='CASE '+pad(S.caseIdx+1)+' / '+CASES.length;
   else if(S.screen==='seminar') c='세미나 자료';
   else if(S.screen==='chart') c='진단서 작성 시간';
   else if(S.screen==='first') c='첫 번째 진찰';
@@ -508,14 +608,57 @@ V.home=function(){
 
 /* --- 프롤로그 --- */
 V.prologue=function(){
-  return '<div class="hero"><div class="hero-inner">'+
-    '<span class="chip live" style="margin-bottom:24px">긴급 환자 접수</span>'+
-    '<p class="pro-line" style="animation-delay:.05s">문장 클리닉에 이상한 문장들이 찾아왔습니다.</p>'+
-    '<p class="pro-line sub" style="animation-delay:.9s">그런데 어디가 아픈지는 아무도 모릅니다.</p>'+
-    '<p class="pro-line" style="animation-delay:1.8s">문장 의사가 되어 직접 진단해 주세요.</p>'+
-    '<div style="opacity:0;animation:rise 500ms ease 2.6s forwards;margin-top:34px">'+
-    '<button class="btn btn-primary" data-act="go" data-to="first">첫 번째 문장 진찰하기</button></div>'+
-  '</div></div>';
+  var p=S.pro;
+
+  if(p.stage===0){
+    return '<div class="hero"><div class="hero-inner">'+
+      '<span class="chip live" style="margin-bottom:24px">🚨 긴급 환자 접수</span>'+
+      '<p class="pro-line" style="animation-delay:.05s">문장 클리닉에 이상한 문장들이 찾아왔습니다.</p>'+
+      '<p class="pro-line sub" style="animation-delay:.9s">그런데 어디가 아픈지는 아무도 모릅니다.</p>'+
+      '<p class="pro-line" style="animation-delay:1.8s">문장 의사가 되어 함께 알아봐요.</p>'+
+      '<div style="opacity:0;animation:rise 500ms ease 2.6s forwards;margin-top:34px">'+
+      '<button class="btn btn-primary" data-act="pro-next" data-n="1">무슨 일인지 알아보기 →</button></div>'+
+    '</div></div>';
+  }
+
+  if(p.stage===1){
+    return '<div class="stage narrow">'+
+      '<div class="eyebrow"><span class="chip live">🚑 문장 클리닉 응급실</span><span>접수 시간: 방금 전</span></div>'+
+      '<h1 class="screen-title">환자가 실려 왔습니다!</h1>'+
+      '<div class="card">'+
+        '<p class="section-q" style="margin-bottom:2px">삐뽀삐뽀— 접수창구에 다급한 목소리가 들려왔습니다.</p>'+
+        '<div class="speech">“사람들이 자꾸 저를 이상한 눈으로 쳐다봐요... 저, 어디가 아픈 걸까요?”</div>'+
+      '</div>'+
+      '<div class="card sentence-card">'+
+        '<div class="ba-tag" style="text-align:left;margin-bottom:14px">🩺 오늘의 첫 환자</div>'+
+        '<div class="sentence">'+tokensHTML(['나는','어제','도서관에','간다.'],[],false)+'</div>'+
+      '</div>'+
+      '<p class="screen-sub" style="text-align:center;margin-top:22px">겉보기엔 멀쩡해 보이는데... 어딘가 좀 이상합니다.</p>'+
+      '<div class="navrow"><button class="btn btn-ghost" data-act="pro-next" data-n="0">← 다시 보기</button><span class="spacer"></span>'+
+      '<button class="btn btn-primary" data-act="pro-next" data-n="2">함께 진찰해 볼까요? →</button></div>'+
+    '</div>';
+  }
+
+  return '<div class="stage narrow">'+
+    '<div class="eyebrow"><span class="chip live">🩺 문장 클리닉 진찰</span><span>다 함께 생각해봐요</span></div>'+
+    '<h1 class="screen-title">문장을 소리 내어 읽어봅시다</h1>'+
+    '<div class="card">'+
+      '<p class="section-q">🔎 문장을 읽었을 때 어색하거나 이상하게 느껴지는 부분이 있나요?</p>'+
+      '<p class="section-help">짝과 함께 소리 내어 읽어보고 이야기해 봅시다.</p>'+
+      (p.hint1
+        ? fb('look','생각해 볼까요?','앞부분의 표현과 뒷부분의 표현이 잘 어울리지 않습니다.')
+        : '<button class="btn btn-ghost" data-act="pro-hint" data-n="1">힌트 살짝 보기</button>')+
+    '</div>'+
+    '<div class="card">'+
+      '<p class="section-q">🧭 문장을 자연스럽게 고치려면 어떤 부분을 살펴보아야 할까요?</p>'+
+      '<p class="section-help">문장 속 표현들이 서로 어울리는지 짚어가며 생각해 봅시다.</p>'+
+      (p.hint2
+        ? fb('look','생각해 볼까요?','문장 속 표현들이 서로 알맞게 연결되어 있는지 살펴보아야 합니다.')
+        : '<button class="btn btn-ghost" data-act="pro-hint" data-n="2">힌트 살짝 보기</button>')+
+    '</div>'+
+    '<div class="navrow"><button class="btn btn-ghost" data-act="pro-next" data-n="1">← 이전</button><span class="spacer"></span>'+
+    '<button class="btn btn-primary" data-act="go" data-to="first">첫 번째 문장 진찰하기 →</button></div>'+
+  '</div>';
 };
 
 /* --- 활동 1: 첫 진찰 --- */
@@ -577,7 +720,7 @@ V.first=function(){
 /* --- 진료실 선택(허브) --- */
 V.hub=function(){
   var html='<div class="stage">'+
-    '<div class="eyebrow"><span class="chip">문장 클리닉 / 진료실</span><span>탐구한 진단실 '+exploredCount()+' / 4</span></div>'+
+    '<div class="eyebrow"><span class="chip">문장 클리닉 / 진료실</span><span>돌아본 진단실 '+visitedCount()+' / 4</span></div>'+
     '<h1 class="screen-title">네 개의 진료실을 모두 돌아봅시다</h1>'+
     '<p class="screen-sub">진료실마다 환자 문장이 한 명씩 기다리고 있습니다. 표현을 직접 바꾸어 보며 <b>어떤 표현끼리 서로 어울리는지</b> 찾아보세요. 순서는 자유롭게 정해도 됩니다.</p>'+
     '<div class="grid4">'+
@@ -593,8 +736,8 @@ V.hub=function(){
       }).join('')+
     '</div>'+
     '<div class="navrow"><button class="btn btn-ghost" data-act="go" data-to="first">← 이전</button><span class="spacer"></span>'+
-      '<button class="btn btn-primary" data-act="go" data-to="result"'+(allExplored()?'':' disabled')+'>'+
-      (allExplored()?'탐구 결과 보기 →':'네 진료실을 모두 돌아보면 열립니다')+'</button></div>'+
+      '<button class="btn btn-primary" data-act="go" data-to="result"'+(allVisited()?'':' disabled')+'>'+
+      (allVisited()?'탐구 결과 보기 →':'네 진료실을 모두 돌아보면 열립니다')+'</button></div>'+
   '</div>';
   return html;
 };
@@ -661,7 +804,7 @@ V.explore=function(){
   var next = idx<3 ? DIAGS[idx+1] : null;
   html+='<div class="navrow"><button class="btn btn-ghost" data-act="go" data-to="hub">← 진료실 목록</button><span class="spacer"></span>'+
     (next ? '<button class="btn btn-primary" data-act="open-diag" data-id="'+next.id+'">다음 진찰하기 →</button>'
-          : '<button class="btn btn-primary" data-act="go" data-to="'+(allExplored()?'result':'hub')+'">'+(allExplored()?'탐구 결과 보기 →':'진료실 목록으로 →')+'</button>')+
+          : '<button class="btn btn-primary" data-act="go" data-to="'+(allVisited()?'result':'hub')+'">'+(allVisited()?'탐구 결과 보기 →':'진료실 목록으로 →')+'</button>')+
   '</div></div>';
   return html;
 };
@@ -734,7 +877,9 @@ V.chart=function(){
 
 /* --- 활동 2: 처방 --- */
 V.cases=function(){
-  var i=S.caseIdx, c=CASES[i], st=S.cs[i], d=D(c.diag);
+  var i=S.caseIdx, c=CASES[i], st=S.cs[i];
+  if(c.type==='diary') return V.diaryCase(i,c,st);
+  var d=D(c.diag);
   var toneStr = st.stage>=2 ? tone(d) : 'style="--c:#2563EB;--c-soft:#E8F0FF"';
 
   var html='<div class="stage narrow" '+toneStr+'>'+
@@ -810,9 +955,57 @@ V.cases=function(){
   return html;
 };
 
+/* --- 활동 2 보너스: 일기 속 오류 찾기 --- */
+V.diaryCase=function(i,c,st){
+  var badIdx=[]; c.sentences.forEach(function(s,idx){ if(s.bad) badIdx.push(idx); });
+  var revealed = st.stage>=1;
+
+  var html='<div class="stage narrow" style="--c:#2563EB;--c-soft:#E8F0FF">'+
+    '<div class="eyebrow"><span class="chip live">종합 처방 · CASE '+pad(i+1)+'</span><span>현재 상태: '+(revealed?'진단 완료':'진료 중')+'</span></div>'+
+    '<h1 class="screen-title">'+c.diaryTitle+'</h1>'+
+    '<p class="screen-sub">'+c.diaryAsk+'</p>'+
+    '<div class="card"><div class="diary-text">'+
+      c.sentences.map(function(s,idx){
+        var marked = st.marks.indexOf(idx)>=0;
+        if(revealed){
+          return '<span class="diary-sent'+(s.bad?' bad-reveal':'')+'">'+s.t+'</span>';
+        }
+        return '<button type="button" class="diary-sent'+(marked?' on':'')+'" data-act="d-mark" data-i="'+idx+'">'+s.t+'</button>';
+      }).join(' ')+
+    '</div></div>';
+
+  if(!revealed){
+    html+='<div class="card"><p class="section-q">선택한 문장 · '+st.marks.length+' / 3</p>'+
+      '<p class="section-help">어색하다고 생각하는 문장을 정확히 3개 고른 뒤 확인해 보세요.</p>'+
+      (st.msg||'')+
+      '<button class="btn btn-soft" data-act="d-check"'+(st.marks.length===3?'':' disabled')+'>확인하기</button>'+
+    '</div>';
+  } else {
+    html+='<div class="card reveal">'+fb('good','정확히 찾았어요!','일기 속에서 서로 어울리지 않는 표현이 있는 문장 3개를 모두 찾았습니다.')+'</div>';
+    badIdx.forEach(function(idx){
+      var s=c.sentences[idx], sd=D(s.diag);
+      html+='<div class="card reveal" '+tone(sd)+'>'+
+        '<p class="section-q">'+(idx+1)+'번째 문장 · <span style="color:'+sd.color+'">'+sd.name+'</span></p>'+
+        '<div class="ba"><div class="ba-box"><div class="ba-tag">치료 전</div><div class="ba-text">'+s.t+'</div></div>'+
+        '<div class="ba-arrow">→</div><div class="ba-box after"><div class="ba-tag">치료 후</div><div class="ba-text">'+s.corrected+'</div></div></div>'+
+        fb('info','왜 이렇게 고쳤을까요?',s.explain)+
+      '</div>';
+    });
+    html+='<div class="paper" style="margin-top:18px"><span class="ic">✎</span><span><b>처방전 작성 시간</b><br>세 문장을 왜 그렇게 고쳤는지 모둠의 말로 처방전에 정리해 봅시다.</span></div>';
+  }
+
+  html+='<div class="navrow">'+
+    '<button class="btn btn-ghost" data-act="c-prev">← 이전</button><span class="spacer"></span>'+
+    (i<CASES.length-1
+      ? '<button class="btn btn-primary" data-act="c-next">다음 환자 →</button>'
+      : '<button class="btn btn-primary" data-act="go" data-to="seminar">세미나 열러 가기 →</button>')+
+  '</div></div>';
+  return html;
+};
+
 /* --- 활동 3: 세미나 --- */
 V.seminar=function(){
-  var list=CASES.filter(function(c){ return !c.natural; });
+  var list=CASES.filter(function(c){ return !c.natural && c.type!=='diary'; });
   var c=list[S.seminarIdx], d=D(c.diag), stg=S.seminarStage;
   var html='<div class="stage narrow" '+tone(d)+'>'+
     '<div class="eyebrow"><span class="chip live">문장 클리닉 세미나</span><span>오늘의 대표 환자</span></div>'+
@@ -862,7 +1055,388 @@ V.summary=function(){
 };
 
 /* ======================================================================
-   8. 렌더 · 이벤트
+   8. 미니게임 — 문장호응 산성비
+   ====================================================================== */
+var GAMES = [
+  { id:'rain', icon:'🌧️', name:'문장호응 산성비', tag:'타임어택 · 60초',
+    desc:'하늘에서 문장이 쏟아집니다. 호응이 어긋난 문장만 재빨리 눌러 터뜨리고, 자연스러운 문장은 그냥 흘려보내세요!' }
+];
+var RAIN_POOL_BASE = [
+  {t:'내 꿈은 훌륭한 화가가 되는 것이다.', bad:false},
+  {t:'내 꿈은 훌륭한 화가가 되고 싶다.', bad:true},
+  {t:'내가 가장 좋아하는 과목은 수학이다.', bad:false},
+  {t:'내가 가장 좋아하는 과목은 수학을 좋아한다.', bad:true},
+  {t:'우리 학교의 자랑은 넓은 운동장이다.', bad:false},
+  {t:'우리 학교의 자랑은 운동장이 넓다.', bad:true},
+  {t:'나는 어제 친구와 놀이터에서 놀았다.', bad:false},
+  {t:'나는 어제 친구와 놀이터에서 논다.', bad:true},
+  {t:'내일 우리 가족은 할머니 댁에 갈 것이다.', bad:false},
+  {t:'내일 우리 가족은 할머니 댁에 갔다.', bad:true},
+  {t:'지난주에 우리 반은 박물관을 다녀왔다.', bad:false},
+  {t:'지난주에 우리 반은 박물관을 다녀올 것이다.', bad:true},
+  {t:'할아버지께서 거실에서 신문을 읽고 계신다.', bad:false},
+  {t:'할아버지께서 거실에서 신문을 읽는다.', bad:true},
+  {t:'할머니께서 진지를 맛있게 드셨다.', bad:false},
+  {t:'할머니께서 밥을 맛있게 먹었다.', bad:true},
+  {t:'선생님께서 우리에게 숙제를 내주셨다.', bad:false},
+  {t:'선생님이 우리에게 숙제를 내주었다.', bad:true},
+  {t:'동생은 결코 거짓말을 하지 않는다.', bad:false},
+  {t:'동생은 결코 거짓말을 한다.', bad:true},
+  {t:'오늘 아침에는 전혀 배가 고프지 않았다.', bad:false},
+  {t:'오늘 아침에는 전혀 배가 고팠다.', bad:true},
+  {t:'그 음식은 별로 맵지 않다.', bad:false},
+  {t:'그 음식은 별로 맵다.', bad:true}
+];
+
+/* 받침 유무에 따라 조사를 골라주는 도우미 (문제 문장을 규칙 기반으로 대량 생성할 때 사용) */
+function hasBatchim(word){
+  var ch=word.charCodeAt(word.length-1);
+  if(ch<0xAC00||ch>0xD7A3) return false;
+  return (ch-0xAC00)%28!==0;
+}
+function iGa(w){ return hasBatchim(w)?'이':'가'; }
+function eunNeun(w){ return hasBatchim(w)?'은':'는'; }
+function eulReul(w){ return hasBatchim(w)?'을':'를'; }
+
+/* 주술호응 */
+function buildCompPool(){
+  var out=[];
+  var names=['서준','지우','민재','하은','도윤'];
+  var jobs=['화가','의사','과학자','요리사','디자이너','수의사','사진작가','건축가','프로그래머','만화가'];
+  names.forEach(function(name){
+    jobs.forEach(function(job){
+      var p=iGa(job);
+      out.push({ t:name+'의 꿈은 훌륭한 '+job+p+' 되는 것이다.', bad:false });
+      out.push({ t:name+'의 꿈은 훌륭한 '+job+p+' 되고 싶다.', bad:true });
+    });
+  });
+  var tuples=[['과목','수학'],['과목','과학'],['과목','체육'],['계절','여름'],['계절','겨울'],
+    ['음식','떡볶이'],['음식','피자'],['운동','축구'],['운동','수영'],['색깔','파란색'],
+    ['동물','강아지'],['동물','고양이'],['노래','동요'],['요일','금요일'],['영화','만화 영화']];
+  var phrasesB=['내가 가장 좋아하는','우리 반 친구들이 가장 좋아하는'];
+  phrasesB.forEach(function(ph){
+    tuples.forEach(function(tp){
+      var cat=tp[0], item=tp[1];
+      out.push({ t:ph+' '+cat+eunNeun(cat)+' '+item+'이다.', bad:false });
+      out.push({ t:ph+' '+cat+eunNeun(cat)+' '+item+eulReul(item)+' 좋아한다.', bad:true });
+    });
+  });
+  var places=['운동장','도서관','미술실','급식실','강당','놀이터','체육관','과학실'];
+  var phrasesC=['우리 학교의 자랑은','우리 반의 자랑은'];
+  phrasesC.forEach(function(ph){
+    places.forEach(function(pl){
+      out.push({ t:ph+' 넓은 '+pl+'이다.', bad:false });
+      out.push({ t:ph+' 넓은 '+pl+eulReul(pl)+' 가지고 있다.', bad:true });
+    });
+  });
+  return out;
+}
+
+/* 시간호응 */
+function buildTimePool(){
+  var out=[];
+  var verbs=[
+    {obj:'놀이터에서 신나게', past:'놀았다.', pres:'논다.', fut:'놀 것이다.'},
+    {obj:'도서관에서 책을', past:'읽었다.', pres:'읽는다.', fut:'읽을 것이다.'},
+    {obj:'스케치북에 그림을', past:'그렸다.', pres:'그린다.', fut:'그릴 것이다.'},
+    {obj:'방을 깨끗이', past:'청소했다.', pres:'청소한다.', fut:'청소할 것이다.'},
+    {obj:'동네를 한 바퀴', past:'걸었다.', pres:'걷는다.', fut:'걸을 것이다.'}
+  ];
+  var pastTimes=['어제','지난주에','그저께'];
+  var futTimes=['내일','다음 주에','모레'];
+  var subjPast=['나는','지훈이는'];
+  var subjFut=['우리 반은','동생은'];
+  var k=0;
+  subjPast.forEach(function(subj){
+    verbs.forEach(function(v){
+      pastTimes.forEach(function(tw){
+        var wrong=(k%2===0)?v.fut:v.pres;
+        out.push({ t:subj+' '+tw+' '+v.obj+' '+v.past, bad:false });
+        out.push({ t:subj+' '+tw+' '+v.obj+' '+wrong, bad:true });
+        k++;
+      });
+    });
+  });
+  subjFut.forEach(function(subj){
+    verbs.forEach(function(v){
+      futTimes.forEach(function(tw){
+        out.push({ t:subj+' '+tw+' '+v.obj+' '+v.fut, bad:false });
+        out.push({ t:subj+' '+tw+' '+v.obj+' '+v.past, bad:true });
+      });
+    });
+  });
+  return out;
+}
+
+/* 높임호응 */
+function buildHonorPool(){
+  var out=[];
+  var elders=['할머니','할아버지','선생님','교장 선생님','외할머니','외할아버지','이모할머니'];
+  var combos=[
+    {obj:'진지를 맛있게', hon:'드셨다.', plain:'먹었다.'},
+    {obj:'낮잠을', hon:'주무셨다.', plain:'잤다.'},
+    {obj:'거실에', hon:'계셨다.', plain:'있었다.'},
+    {obj:'우리에게 옛날이야기를', hon:'말씀하셨다.', plain:'말했다.'},
+    {obj:'나에게 용돈을', hon:'주셨다.', plain:'주었다.'},
+    {obj:'우리 집에', hon:'오셨다.', plain:'왔다.'},
+    {obj:'신문을', hon:'보셨다.', plain:'보았다.'},
+    {obj:'동화책을', hon:'읽으셨다.', plain:'읽었다.'},
+    {obj:'맛있는 만두를', hon:'만드셨다.', plain:'만들었다.'},
+    {obj:'된장국을', hon:'끓이셨다.', plain:'끓였다.'}
+  ];
+  elders.forEach(function(el){
+    combos.forEach(function(c){
+      out.push({ t:el+'께서 '+c.obj+' '+c.hon, bad:false });
+      out.push({ t:el+'께서 '+c.obj+' '+c.plain, bad:true });
+    });
+  });
+  return out;
+}
+
+/* 부정호응 */
+function buildNegaPool(){
+  var out=[];
+  var advs=['전혀','별로','결코','도무지','좀처럼'];
+  var phrases=[
+    {subjs:['나는','동생은','민지는','내 친구는'], pos:'배가 고팠다.', neg:'배가 고프지 않았다.'},
+    {subjs:['그 음식은','오늘 급식 반찬은','새로 만든 찌개는'], pos:'맵다.', neg:'맵지 않다.'},
+    {subjs:['이 숙제는','오늘 시험 문제는','그 수학 문제는'], pos:'어렵다.', neg:'어렵지 않다.'},
+    {subjs:['그 이야기는','이 영화는','그 동화책은'], pos:'재미있었다.', neg:'재미있지 않았다.'},
+    {subjs:['동생은','그 친구는','민재는'], pos:'거짓말을 한다.', neg:'거짓말을 하지 않는다.'},
+    {subjs:['나는','그 친구는','우리 반 지훈이는'], pos:'지각을 한다.', neg:'지각을 하지 않는다.'},
+    {subjs:['그 친구는','동생은','나는'], pos:'약속을 어긴다.', neg:'약속을 어기지 않는다.'},
+    {subjs:['나는','그 선수는','우리 팀은'], pos:'포기를 한다.', neg:'포기를 하지 않는다.'},
+    {subjs:['아버지는','선생님은','그 친구는'], pos:'화를 낸다.', neg:'화를 내지 않는다.'},
+    {subjs:['나는','동생은','그 친구는'], pos:'실망했다.', neg:'실망하지 않았다.'},
+    {subjs:['나는','발표를 맡은 친구는','민지는'], pos:'긴장했다.', neg:'긴장하지 않았다.'},
+    {subjs:['나는','우리 가족은','동생은'], pos:'피곤했다.', neg:'피곤하지 않았다.'},
+    {subjs:['나는','동생은','그 친구는'], pos:'졸렸다.', neg:'졸리지 않았다.'},
+    {subjs:['나는','동생은','그 아이는'], pos:'무서웠다.', neg:'무섭지 않았다.'},
+    {subjs:['손이','목소리가','다리가'], pos:'떨렸다.', neg:'떨리지 않았다.'}
+  ];
+  phrases.forEach(function(ph){
+    advs.forEach(function(adv,aIdx){
+      var subj=ph.subjs[aIdx%ph.subjs.length];
+      out.push({ t:subj+' '+adv+' '+ph.neg, bad:false });
+      out.push({ t:subj+' '+adv+' '+ph.pos, bad:true });
+    });
+  });
+  return out;
+}
+
+function dedupePool(arr){
+  var seen={}, out=[];
+  arr.forEach(function(x){ if(!seen[x.t]){ seen[x.t]=1; out.push(x); } });
+  return out;
+}
+var RAIN_POOL = dedupePool(RAIN_POOL_BASE.concat(buildCompPool(), buildTimePool(), buildHonorPool(), buildNegaPool()));
+var G = {
+  open:false,
+  screen:'closed',   /* closed | intro | playing | over */
+  score:0, lives:3, timeLeft:60,
+  best:0,
+  items:[], nextId:1,
+  spawnTimer:null, tickTimer:null,
+  deck:[], lastPick:-1
+};
+try{ G.best = +(localStorage.getItem('sc_rain_best')||0) || 0; }catch(e){}
+
+function rainShuffled(n){
+  var arr=[]; for(var i=0;i<n;i++) arr.push(i);
+  for(var j=arr.length-1;j>0;j--){ var k=Math.floor(Math.random()*(j+1)); var tmp=arr[j]; arr[j]=arr[k]; arr[k]=tmp; }
+  return arr;
+}
+function rainNextPick(){
+  if(G.deck.length===0){
+    G.deck=rainShuffled(RAIN_POOL.length);
+    if(G.deck.length>1 && G.deck[0]===G.lastPick){
+      var tmp=G.deck[0]; G.deck[0]=G.deck[1]; G.deck[1]=tmp;
+    }
+  }
+  var idx=G.deck.shift();
+  G.lastPick=idx;
+  return RAIN_POOL[idx];
+}
+
+function gamePaint(){
+  var tab=document.getElementById('gameTab'), panel=document.getElementById('gamePanel');
+  tab.classList.toggle('open',G.open);
+  tab.setAttribute('aria-expanded',G.open?'true':'false');
+  panel.classList.toggle('open',G.open);
+  panel.setAttribute('aria-hidden',G.open?'false':'true');
+}
+function gameListHTML(){
+  return GAMES.map(function(g){
+    return '<div class="game-card"><div class="gc-top"><span class="gc-ico">'+g.icon+'</span>'+
+      '<span class="gc-name">'+g.name+'</span>'+
+      (G.best>0 ? '<span class="gc-best">최고 '+G.best+'점</span>' : '')+
+      '</div><span class="gc-tag">'+g.tag+'</span>'+
+      '<p class="gc-desc">'+g.desc+'</p>'+
+      '<button class="btn btn-primary" data-act="game-open" data-id="'+g.id+'">시작하기</button></div>';
+  }).join('');
+}
+function gameModalShell(){
+  var modal=document.getElementById('gameModal');
+  var body='';
+  if(G.screen==='intro'){
+    body='<div class="game-result">'+
+      '<div style="font-size:52px">🌧️</div>'+
+      '<h2 style="margin:12px 0 8px;font-weight:700">문장호응 산성비</h2>'+
+      '<p class="game-desc">하늘에서 문장이 떨어집니다.<br><b>호응이 어긋난(어색한) 문장</b>만 눌러서 터뜨리세요.<br>자연스러운 문장을 누르거나, 어색한 문장을 놓치면 목숨이 줄어듭니다.</p>'+
+      (G.best>0 ? '<p class="game-tip">최고 기록 · '+G.best+'점</p>' : '')+
+      '<button class="btn btn-primary" data-act="game-start" style="margin-top:18px">60초 시작! →</button>'+
+    '</div>';
+  } else if(G.screen==='playing'){
+    body='<div class="rain-stage" id="rainStage"><div class="rain-ground"></div></div>'+
+      '<p class="game-tip">어색한 문장은 눌러서 터뜨리고, 자연스러운 문장은 그냥 흘려보내세요.</p>';
+  } else if(G.screen==='over'){
+    body='<div class="game-result">'+
+      '<div style="font-size:17px;font-weight:700;color:var(--text-secondary)">타임 어택 종료!</div>'+
+      '<div class="gr-score">'+G.score+'<span style="font-size:20px;font-weight:700;color:var(--text-muted)">점</span></div>'+
+      (G.score>=G.best && G.score>0 ? '<p class="game-tip">🎉 최고 기록을 경신했습니다!</p>' : '<p class="game-tip">최고 기록 · '+G.best+'점</p>')+
+      '<div class="navrow" style="margin-top:18px"><button class="btn btn-ghost" data-act="game-close">닫기</button>'+
+      '<button class="btn btn-primary" data-act="game-start">다시 하기 →</button></div>'+
+    '</div>';
+  }
+  modal.innerHTML='<div class="game-box">'+
+    '<div class="game-box-head"><span class="gt">🌧️ 문장호응 산성비</span>'+
+    (G.screen==='playing' ? '<div class="game-hud"><span>⏱ <b id="gTime">'+G.timeLeft+'</b>초</span><span>⭐ <b id="gScore">'+G.score+'</b>점</span><span>❤️ <b id="gLives">'+G.lives+'</b></span></div>' : '')+
+    '<button type="button" class="game-x" data-act="game-close" aria-label="게임 닫기">✕</button></div>'+
+    '<div class="game-box-body">'+body+'</div>'+
+  '</div>';
+}
+function gameOpen(){
+  G.open=false; gamePaint();
+  G.screen='intro';
+  document.getElementById('gameModal').classList.add('show');
+  gameModalShell();
+}
+function gameClose(){
+  gameStop();
+  G.screen='closed';
+  var modal=document.getElementById('gameModal');
+  modal.classList.remove('show');
+  modal.innerHTML='';
+}
+function gameStop(){
+  if(G.spawnTimer){ clearTimeout(G.spawnTimer); G.spawnTimer=null; }
+  if(G.tickTimer){ clearInterval(G.tickTimer); G.tickTimer=null; }
+  G.items.forEach(function(it){ if(it.el&&it.el.parentNode) it.el.parentNode.removeChild(it.el); });
+  G.items=[];
+}
+function gameStart(){
+  gameStop();
+  G.score=0; G.lives=3; G.timeLeft=60;
+  G.deck=[]; G.lastPick=-1;
+  G.screen='playing';
+  gameModalShell();
+  G.tickTimer=setInterval(gameTick,1000);
+  scheduleSpawn();
+}
+function gameTick(){
+  G.timeLeft--;
+  var t=document.getElementById('gTime'); if(t) t.textContent=G.timeLeft;
+  if(G.timeLeft<=0) gameEnd();
+}
+function scheduleSpawn(){
+  if(G.screen!=='playing') return;
+  rainSpawn();
+  var elapsed=60-G.timeLeft;
+  var interval=Math.max(650,1500-elapsed*13);
+  G.spawnTimer=setTimeout(scheduleSpawn,interval);
+}
+function rainSpawn(){
+  var stage=document.getElementById('rainStage');
+  if(!stage) return;
+  var pick=rainNextPick();
+  var id=G.nextId++;
+  var el=document.createElement('button');
+  el.type='button';
+  el.className='rain-item';
+  el.setAttribute('data-act','rain-pop');
+  el.setAttribute('data-id',id);
+  el.textContent=pick.t;
+  stage.appendChild(el);
+  var item={ id:id, bad:pick.bad, el:el, done:false };
+  G.items.push(item);
+
+  var w=stage.clientWidth, itemW=el.offsetWidth, pad=8;
+  var maxLeft=w-itemW-pad;
+  var leftPx = maxLeft>pad ? pad+Math.random()*(maxLeft-pad) : Math.max(pad,(w-itemW)/2);
+  el.style.left=leftPx+'px';
+
+  var h=stage.clientHeight;
+  var elapsed=60-G.timeLeft;
+  var travel=Math.max(3200,7000-elapsed*45);
+  el.style.transition='top '+travel+'ms linear, opacity 160ms ease, transform 160ms ease';
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      if(item.done) return;
+      el.style.top=(h+40)+'px';
+    });
+  });
+  el.addEventListener('transitionend',function(e){
+    if(e.propertyName==='top') rainResolve(item);
+  });
+}
+function rainFindItem(id){
+  for(var i=0;i<G.items.length;i++){ if(G.items[i].id===id) return G.items[i]; }
+  return null;
+}
+function rainFreeze(item){
+  var top=getComputedStyle(item.el).top;
+  item.el.style.top=top;
+  item.el.style.transition='opacity 160ms ease, transform 160ms ease';
+}
+function rainPop(id){
+  var item=rainFindItem(id);
+  if(!item||item.done) return;
+  item.done=true;
+  rainFreeze(item);
+  if(item.bad){
+    G.score+=10;
+    item.el.classList.add('pop');
+  } else {
+    G.lives--;
+    rainShake();
+    item.el.classList.add('miss');
+  }
+  rainSync();
+  setTimeout(function(){ rainRemove(item); },170);
+  if(G.lives<=0) gameEnd();
+}
+function rainResolve(item){
+  if(item.done) return;
+  item.done=true;
+  if(item.bad){ G.lives--; rainShake(); }
+  rainRemove(item);
+  rainSync();
+  if(G.lives<=0) gameEnd();
+}
+function rainRemove(item){
+  if(item.el&&item.el.parentNode) item.el.parentNode.removeChild(item.el);
+  var idx=G.items.indexOf(item);
+  if(idx>=0) G.items.splice(idx,1);
+}
+function rainShake(){
+  var stage=document.getElementById('rainStage');
+  if(!stage) return;
+  stage.classList.remove('shake'); void stage.offsetWidth; stage.classList.add('shake');
+}
+function rainSync(){
+  var s=document.getElementById('gScore'), l=document.getElementById('gLives');
+  if(s) s.textContent=G.score;
+  if(l) l.textContent=G.lives;
+}
+function gameEnd(){
+  gameStop();
+  if(G.score>G.best){ G.best=G.score; try{ localStorage.setItem('sc_rain_best',G.best); }catch(e){} }
+  G.screen='over';
+  gameModalShell();
+}
+
+/* ======================================================================
+   9. 렌더 · 이벤트
    ====================================================================== */
 function render(keepScroll){
   var y=window.scrollY;
@@ -883,8 +1457,20 @@ document.addEventListener('click',function(ev){
     render(); return;
   }
   if(act==='restart'){
-    S.screen='home'; render(); return;
+    S.screen='home'; S.pro={ stage:0, hint1:false, hint2:false }; render(); return;
   }
+
+  /* 상단 단계 바 — 어느 단계로든 자유롭게 이동 */
+  if(act==='flow-jump'){
+    var jumpKey=el.getAttribute('data-key');
+    var JUMP_SCREEN={ first:'first', explore:'hub', chart:'chart', cases:'cases', seminar:'seminar', summary:'summary' };
+    S.screen=JUMP_SCREEN[jumpKey]||S.screen;
+    render(); return;
+  }
+
+  /* 프롤로그 */
+  if(act==='pro-next'){ S.pro.stage=+el.getAttribute('data-n'); render(); return; }
+  if(act==='pro-hint'){ S.pro['hint'+el.getAttribute('data-n')]=true; render(true); return; }
 
   /* 첫 진찰 */
   if(act==='first-judge'){ S.first.judged=el.getAttribute('data-v'); render(true); return; }
@@ -897,7 +1483,7 @@ document.addEventListener('click',function(ev){
   if(act==='first-react'){ S.first.reaction=el.getAttribute('data-v'); render(true); return; }
 
   /* 탐구 */
-  if(act==='open-diag'){ S.curDiag=el.getAttribute('data-id'); S.screen='explore'; render(); return; }
+  if(act==='open-diag'){ S.curDiag=el.getAttribute('data-id'); S.ex[S.curDiag].visited=true; S.screen='explore'; render(); return; }
   if(act==='ex'){
     var st=S.ex[S.curDiag];
     st[el.getAttribute('data-k')]=el.getAttribute('data-v');
@@ -957,9 +1543,35 @@ document.addEventListener('click',function(ev){
     return;
   }
 
+  /* 처방 — 일기 속 오류 찾기 */
+  if(act==='d-mark'){
+    var s8=S.cs[S.caseIdx];
+    if(s8.stage>=1) return;
+    var n2=+el.getAttribute('data-i'), q2=s8.marks.indexOf(n2);
+    if(q2>=0) s8.marks.splice(q2,1);
+    else if(s8.marks.length<3) s8.marks.push(n2);
+    s8.msg=null;
+    render(true); return;
+  }
+  if(act==='d-check'){
+    var c6=CASES[S.caseIdx], s9=S.cs[S.caseIdx];
+    var bad6=[]; c6.sentences.forEach(function(s,idx){ if(s.bad) bad6.push(idx); });
+    var same = s9.marks.length===3 && bad6.every(function(n){ return s9.marks.indexOf(n)>=0; });
+    if(same){ s9.stage=1; s9.msg=null; }
+    else { s9.msg=fb('look','아직 정확하지 않아요.','고른 문장을 하나씩 다시 소리 내어 읽어 보세요. 앞의 표현과 뒤의 표현이 서로 잘 어울리나요?'); }
+    render(true); return;
+  }
+
   /* 세미나 */
   if(act==='sem-pick'){ S.seminarIdx=+el.getAttribute('data-n'); S.seminarStage=0; render(true); return; }
   if(act==='sem-stage'){ S.seminarStage=+el.getAttribute('data-n'); render(true); return; }
+
+  /* 미니게임 */
+  if(act==='game-toggle'){ G.open=!G.open; gamePaint(); return; }
+  if(act==='game-open'){ gameOpen(); return; }
+  if(act==='game-close'){ gameClose(); return; }
+  if(act==='game-start'){ gameStart(); return; }
+  if(act==='rain-pop'){ rainPop(+el.getAttribute('data-id')); return; }
 });
 
 /* 입력값 유지 */
@@ -968,6 +1580,8 @@ document.addEventListener('input',function(ev){
   if(ev.target.id==='pb') S.ex[S.curDiag].pb=ev.target.value;
 });
 
+document.getElementById('gameList').innerHTML=gameListHTML();
+gamePaint();
 render();
 })();
 </script>
